@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ROUTES } from '../lib/routes'
+import Hero from '../components/Hero'
 import SectionHeading from '../components/SectionHeading'
 import ProfileCard from '../components/ProfileCard'
 import { CLASS_PROFILE, OFFICERS, MEMBERS, GALLERY } from '../data/placeholders'
