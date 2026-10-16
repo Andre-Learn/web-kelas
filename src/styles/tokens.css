@@ -1,0 +1,41 @@
+/* Palette from PRD 4.2. accent-ink and on-accent refine the PRD accent so
+   buttons and link text keep WCAG AA contrast in both themes. */
+:root {
+  --bg: #F8FAFC;
+  --bg-alt: #EEF2F7;
+  --text: #172033;
+  --text-muted: #64748B;
+  --accent: #8B5CF6;
+  --accent-ink: #6D28D9;
+  --on-accent: #FFFFFF;
+  --border: #E2E8F0;
+  --surface: #FFFFFF;
+  --scrim: rgba(11, 13, 18, 0.82);
+
+  --nav-h: 64px;
+  --container: 1240px;
+  --pad-x: 48px;
+  --radius-card: 20px;
+
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 10px 24px rgba(15, 23, 42, 0.1);
+
+  --fs-hero: clamp(36px, 7vw, 72px);
+  --fs-h2: clamp(26px, 4vw, 40px);
+  --fs-body: 16px;
+}
+
+[data-theme='dark'] {
+  --bg: #0B0D12;
+  --bg-alt: #11151D;
+  --text: #F8FAFC;
+  --text-muted: #A1A1AA;
+  --accent: #A78BFA;
+  --accent-ink: #A78BFA;
+  --on-accent: #0B0D12;
+  --border: #272D39;
+  --surface: #151A23;
+  --scrim: rgba(5, 6, 9, 0.86);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.45);
+}
