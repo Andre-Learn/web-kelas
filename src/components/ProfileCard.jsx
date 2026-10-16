@@ -1,23 +1,27 @@
-import { originalSrc, classPhotoFallback, memberPhotoFallback } from '../lib/images'
+import Photo from './Photo.jsx';
 
-/* A profile card takes an object with name, role/number, optional photo.
-   Missing photos show the labeled SVG fallback, never an invented face. */
-export default function ProfileCard({ name, role, photo, photoKind = 'portrait' }) {
-  const src = photo || (photoKind === 'portrait' ? memberPhotoFallback(name) : classPhotoFallback(photoKind, role))
+/** Officer card for the class structure. Unfilled role slots are labelled as such. */
+export default function ProfileCard({ person, size = 'md' }) {
+  const hasName = Boolean(person.name?.trim());
   return (
-    <figure className="profile-card">
-      <img
-        src={src}
-        alt={`Foto ${name}`}
-        width={photoKind === 'portrait' ? 320 : 640}
-        height={photoKind === 'portrait' ? 320 : 360}
-        loading="lazy"
-        decoding="async"
+    <article className={`profile-card profile-card--${size}`}>
+      <Photo
+        src={person.photo}
+        alt={hasName ? `Portrait of ${person.name}` : ''}
+        name={person.name}
+        fallback="person"
+        ratio="1 / 1"
+        width={320}
+        height={320}
+        className="profile-card__photo"
       />
-      <figcaption>
-        <strong>{name}</strong>
-        {role && <span>{role}</span>}
-      </figcaption>
-    </figure>
-  )
+      <div className="profile-card__body">
+        <p className="profile-card__role">{person.role}</p>
+        <h3 className={`profile-card__name ${hasName ? '' : 'profile-card__name--empty'}`}>
+          {hasName ? person.name : 'Not yet announced'}
+        </h3>
+        {person.description ? <p className="profile-card__desc">{person.description}</p> : null}
+      </div>
+    </article>
+  );
 }

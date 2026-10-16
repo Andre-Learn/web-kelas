@@ -1,19 +1,31 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import { ThemeProvider } from './theme/ThemeProvider'
-import './styles/tokens.css'
-import './styles/base.css'
-import './styles/utilities.css'
-import './styles/site.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { LazyMotion, MotionConfig, domAnimation } from 'framer-motion';
+import App from './App.jsx';
+import { ThemeProvider } from './context/ThemeContext.jsx';
+import { ContentProvider } from './context/ContentContext.jsx';
+import { AuthProvider } from './context/AuthContext.jsx';
+import './styles/tokens.css';
+import './styles/base.css';
+import './styles/public.css';
+import './styles/admin.css';
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <App />
+        <ContentProvider>
+          <AuthProvider>
+            {/* reducedMotion="user" turns transforms off when the OS asks for less motion. */}
+            <MotionConfig reducedMotion="user">
+              <LazyMotion features={domAnimation} strict>
+                <App />
+              </LazyMotion>
+            </MotionConfig>
+          </AuthProvider>
+        </ContentProvider>
       </ThemeProvider>
     </BrowserRouter>
-  </StrictMode>,
-)
+  </React.StrictMode>,
+);

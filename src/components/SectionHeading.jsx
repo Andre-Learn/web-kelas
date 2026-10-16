@@ -1,9 +1,16 @@
-export default function SectionHeading({ kicker, title, lead, id, align = 'start' }) {
+import { Reveal } from './Reveal.jsx';
+
+export default function SectionHeading({ eyebrow, title, description, as: Heading = 'h2', id, action, align = 'start' }) {
   return (
-    <div className={`section-heading align-${align}`}>
-      {kicker && <p className="kicker">{kicker}</p>}
-      <h2 id={id}>{title}</h2>
-      {lead && <p className="lead">{lead}</p>}
-    </div>
-  )
+    <Reveal className={`section-heading section-heading--${align}`}>
+      <div className="section-heading__text">
+        {eyebrow ? <p className="eyebrow">{eyebrow}</p> : null}
+        <Heading id={id} className="section-heading__title">
+          {title}
+        </Heading>
+        {description ? <p className="section-heading__desc">{description}</p> : null}
+      </div>
+      {action ? <div className="section-heading__action">{action}</div> : null}
+    </Reveal>
+  );
 }

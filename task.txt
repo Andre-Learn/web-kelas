@@ -1,0 +1,427 @@
+You are a Senior Frontend Engineer, Professional UI/UX Designer, and Design Systems Specialist.
+
+Your task is to IMPLEMENT the complete frontend design and user interface of the XI TJKT-1 class website by following the existing PRD.md.
+
+IMPORTANT: Your primary responsibility is FRONTEND DEVELOPMENT AND VISUAL IMPLEMENTATION. Do not spend the entire session researching, analyzing, or planning. You must write actual code and build the website.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. PROJECT INSPECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Before coding:
+
+1. Read PRD.md completely.
+2. Inspect package.json and the existing project structure.
+3. Inspect all existing source files, components, pages, stylesheets, and assets.
+4. Identify which frontend features have already been implemented and which are missing.
+5. Check whether the ui-ux-pro-max skill is available and read its instructions before using it.
+6. Work inside the existing project directory:
+   /storage/emulated/0/classweb
+
+Do not assume files exist without checking them.
+
+Do not delete node_modules.
+Do not replace the entire project unnecessarily.
+Do not create a second project in another directory.
+Preserve existing working functionality.
+
+If the project source files are missing, create the necessary frontend structure based on PRD.md.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+2. DESIGN DIRECTION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Create a premium, modern, polished class website for XI TJKT-1.
+
+Follow the design requirements in PRD.md.
+
+Primary design direction:
+- Glassmorphism
+- Minimalist Modern
+- Premium editorial layout
+- Clean typography
+- Refined spacing
+- Elegant visual hierarchy
+- Subtle gradients
+- Beautiful photography
+- Smooth animations
+- Responsive layouts
+- Light mode and dark mode
+
+The website must look professionally designed by an experienced human designer.
+
+Avoid generic AI-generated website aesthetics.
+
+STRICTLY AVOID:
+- Excessive purple or blue gradients everywhere
+- Excessive glowing effects
+- Random decorative circles
+- Unnecessary glass cards everywhere
+- Excessive rounded cards
+- Repetitive layouts across every section
+- Too many floating elements
+- Oversized headings that break mobile layouts
+- Excessive animations
+- Emoji used as substitutes for professional icons
+- Fake statistics or fabricated class information
+- Placeholder content presented as real information
+
+Use glassmorphism selectively where it improves the design, especially in the navbar, overlays, and suitable interface elements.
+
+Use a consistent design system for colors, spacing, typography, shadows, borders, and corner radii.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3. USE UI-UX-PRO-MAX
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use the installed ui-ux-pro-max skill to guide the design process.
+
+Use it to establish:
+- A suitable visual design system
+- Color palette
+- Typography pairing
+- Layout strategy
+- Component styling
+- Responsive design rules
+- Interaction patterns
+- Accessibility considerations
+
+Research only what is necessary.
+
+Once the design direction is established, immediately implement it.
+
+Do not repeatedly run search commands without making progress.
+
+Do not stop after generating design recommendations.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+4. HOMEPAGE IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implement the homepage according to the exact section order specified in PRD.md.
+
+The intended structure is:
+
+A. HERO SECTION
+
+Create a visually impressive hero section featuring:
+- A landscape class photograph as the background
+- A refined dark or light overlay depending on the theme
+- The class name: XI TJKT-1
+- A memorable class slogan
+- Clear visual hierarchy
+- Smooth entrance animations
+- Responsive text positioning
+- A subtle scroll indicator if appropriate
+
+The hero must feel immersive and premium.
+
+If the class photograph is unavailable, use a well-designed image placeholder that can easily be replaced later.
+
+Never pretend a placeholder image is an actual class photograph.
+
+B. ABOUT CLASS
+
+Create a clean and engaging introduction section.
+
+Use the information provided in PRD.md.
+
+Design this section with good typography, readable text widths, and a layout that feels distinct from the hero.
+
+C. CLASS STRUCTURE
+
+Create an attractive class organization section.
+
+Support relevant positions and names according to available data.
+
+Use a polished layout that remains readable on mobile devices.
+
+Do not invent real student names.
+
+D. CLASS MEMBERS
+
+Create a responsive class member directory.
+
+Requirements:
+- Attractive member cards
+- Student photographs or replaceable image placeholders
+- Student names from available project data
+- Search or filtering only if required by PRD.md
+- Appropriate hover and focus states
+- Responsive grid layout
+- Graceful handling of missing photographs
+
+E. CLASS GALLERY
+
+Create an elegant photo gallery.
+
+Requirements:
+- Responsive image grid
+- Consistent image presentation
+- Suitable image aspect ratios
+- Hover interactions
+- Accessible image descriptions
+- Lightbox functionality if specified in PRD.md
+- Lazy loading for gallery images
+- Graceful handling of missing images
+
+F. FOOTER
+
+Create a professional footer containing the appropriate class identity, navigation links, and other information required by PRD.md.
+
+Keep it visually clean and consistent with the rest of the website.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+5. NAVIGATION AND ROUTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implement all public pages and routes required by PRD.md.
+
+Expected routes include:
+
+/
+ /about
+ /structure
+ /members
+ /gallery
+
+Verify the exact requirements in PRD.md before implementing routes.
+
+Navigation requirements:
+- Transparent navbar over the hero when appropriate
+- Glassmorphism or blurred background when scrolling
+- Smooth navigation
+- Mobile hamburger menu
+- Proper active navigation states
+- Accessible keyboard interactions
+- Correct mobile menu behavior
+- No broken links
+- No horizontal overflow
+
+The navigation must work correctly on desktop, tablet, and mobile.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+6. LIGHT MODE AND DARK MODE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implement a complete light/dark theme system.
+
+Requirements:
+- A visible theme toggle
+- Consistent colors across all pages
+- Smooth but subtle theme transitions
+- Readable text contrast
+- Correct styling for cards, forms, navigation, and overlays
+- Persist the selected theme using localStorage when appropriate
+- Respect system preferences for first-time visitors if suitable
+
+Do not implement a toggle that changes only the background while leaving other elements unreadable.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+7. ADMIN DASHBOARD FRONTEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Implement the admin dashboard interface specified in PRD.md.
+
+The admin interface should have a consistent design system and include the required management screens for:
+- Hero content
+- About information
+- Class structure
+- Members
+- Gallery
+- Appearance settings
+
+Use appropriate forms, buttons, upload interfaces, tables, lists, and empty states.
+
+Make the dashboard functional at the frontend level.
+
+If authentication, database integration, or file storage is not implemented yet, clearly separate the frontend from those integrations.
+
+Do not pretend data has been saved to a database when it has not.
+
+Do not hardcode secrets or API keys into frontend files.
+
+Follow the authentication requirements in PRD.md.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+8. ANIMATION AND INTERACTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use the animation library already installed in the project when appropriate.
+
+If Framer Motion is available, use it selectively.
+
+Implement:
+- Subtle page entrance animations
+- Section reveal animations
+- Refined hover transitions
+- Smooth mobile menu transitions
+- Theme transitions
+- Gallery interactions
+- Loading states when needed
+
+Animations must be smooth and purposeful.
+
+Avoid excessive motion and respect prefers-reduced-motion.
+
+Do not install unnecessary dependencies if the existing project can accomplish the task without them.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+9. RESPONSIVE DESIGN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The website must work properly on:
+
+- Small Android phones
+- Large mobile phones
+- Tablets
+- Laptops
+- Desktop monitors
+
+Pay particular attention to small mobile screens.
+
+Requirements:
+- No horizontal scrolling
+- No clipped headings
+- No overlapping navbar elements
+- No broken card layouts
+- No overflowing images
+- Properly sized buttons
+- Readable typography
+- Adequate touch targets
+- Consistent spacing
+
+Do not simply shrink the desktop design to fit a mobile screen.
+
+Design and test the mobile layout intentionally.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+10. CODE QUALITY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Use the framework and architecture already established by the project.
+
+Requirements:
+- Reusable components
+- Clean component structure
+- Maintainable CSS
+- Consistent naming conventions
+- Semantic HTML
+- Accessible controls
+- Proper React keys
+- No unnecessary duplicated components
+- No broken imports
+- No undefined variables
+- No unnecessary dependencies
+- No fake functionality
+
+Avoid putting the entire application into one enormous component.
+
+Separate reusable UI components, page components, data, and styles appropriately.
+
+Do not replace the existing framework with another framework unless PRD.md explicitly requires it.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+11. IMPLEMENTATION WORKFLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Work in the following order:
+
+PHASE 1:
+Inspect PRD.md and existing source files.
+
+PHASE 2:
+Establish the design system using ui-ux-pro-max.
+
+PHASE 3:
+Implement the global styles, typography, theme system, and navigation.
+
+PHASE 4:
+Implement the homepage and all required public pages.
+
+PHASE 5:
+Implement the admin dashboard interface.
+
+PHASE 6:
+Implement responsive behavior, animations, and interactions.
+
+PHASE 7:
+Run the production build.
+
+PHASE 8:
+Fix build errors, broken imports, missing components, and styling issues.
+
+PHASE 9:
+Review the implementation against PRD.md and address missing requirements.
+
+After each meaningful phase, save your changes to the actual project files.
+
+If the task is too large for one response, continue in coherent stages without discarding previous work.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+12. TESTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Inspect package.json before choosing commands.
+
+Use the package manager and scripts already configured in the project.
+
+Run the available production build command.
+
+Fix all build errors you can identify.
+
+Check:
+- Every required route
+- Navigation links
+- Mobile menu
+- Theme toggle
+- Image handling
+- Component imports
+- Console errors where browser testing is available
+- Responsive layouts where browser testing is available
+
+Do not claim that browser testing succeeded if no browser test was performed.
+
+If the build fails because of missing dependencies or an Android filesystem limitation, diagnose the actual issue instead of repeatedly running the same failing command.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+13. STRICT EXECUTION RULES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You MUST make actual code changes.
+
+You MUST follow PRD.md.
+
+You MUST prioritize the frontend UI/UX implementation.
+
+You MUST use ui-ux-pro-max when its skill instructions are available.
+
+You MUST preserve working code.
+
+You MUST implement complete page layouts instead of isolated demonstration components.
+
+You MUST continue beyond research and planning.
+
+You MUST NOT stop after inspecting files.
+
+You MUST NOT stop after listing recommendations.
+
+You MUST NOT return only a plan, tutorial, or code snippets.
+
+You MUST write the implementation directly into the project files.
+
+If a command fails, diagnose the error and try a reasonable alternative.
+
+If information is missing, use a clearly replaceable placeholder instead of inventing facts.
+
+Do not ask unnecessary questions. Make reasonable design decisions based on PRD.md.
+
+When finished, provide a concise report containing:
+1. Features implemented
+2. Files created or modified
+3. Build and test results
+4. Remaining issues or incomplete integrations
+
+START NOW.
+
+Read PRD.md, inspect the current project, and begin implementing the actual frontend UI/UX.
