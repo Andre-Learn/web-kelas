@@ -31,10 +31,34 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!open) return undefined;
+    const root = document.documentElement;
+    root.classList.add('is-locked');
+    const trigger = toggleRef.current;
+    // Everything outside the header is inert while the menu is open.
+    const outside = [...(document.getElementById('root')?.children ?? [])].filter((el) => !el.contains(trigger));
+    outside.forEach((el) => el.setAttribute('inert', ''));
+
+    const focusables = () => [trigger, ...(panelRef.current?.querySelectorAll('a[href], button:not([disabled])') ?? [])].filter(Boolean);
     const onKey = (e) => {
       if (e.key === 'Escape') {
+        e.preventDefault();
         setOpen(false);
-        toggleRef.current?.focus();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+      // Trap Tab inside the trigger and the panel.
+      const list = focusables();
+      const first = list[0];
+      const last = list[list.length - 1];
+      if (!list.includes(document.activeElement)) {
+        e.preventDefault();
+        first.focus();
+      } else if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
       }
     };
     const onResize = () => window.innerWidth >= 900 && setOpen(false);
@@ -42,15 +66,21 @@ export default function Navbar() {
     window.addEventListener('resize', onResize);
     panelRef.current?.querySelector('a')?.focus();
     return () => {
+      root.classList.remove('is-locked');
+      outside.forEach((el) => el.removeAttribute('inert'));
       document.removeEventListener('keydown', onKey);
       window.removeEventListener('resize', onResize);
+      // Return focus to the trigger unless navigation moved it somewhere meaningful.
+      if (!document.activeElement || document.activeElement === document.body || panelRef.current?.contains(document.activeElement)) {
+        trigger?.focus({ preventScroll: true });
+      }
     };
   }, [open]);
 
   return (
     <header className={`navbar ${overPhoto ? 'navbar--over-photo' : 'navbar--glass'} ${open ? 'navbar--open' : ''}`}>
       <div className="container navbar__inner">
-        <Link to="/" className="navbar__brand" aria-label={`${content.settings.className} — home`}>
+        <Link to="/" className="navbar__brand" aria-label={`${content.settings.className}, home`}>
           <span className="navbar__mark" aria-hidden="true">
             XI
           </span>

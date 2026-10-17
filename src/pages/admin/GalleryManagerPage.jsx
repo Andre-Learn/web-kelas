@@ -12,6 +12,7 @@ import { formatDate } from '../../components/Lightbox.jsx';
 import { useToast } from '../../components/Toast.jsx';
 import useCollection from '../../hooks/useCollection.js';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
+import ContentGate from '../../components/admin/ContentGate.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
 import { saveItem, uploadImage } from '../../lib/api.js';
 import { ACCEPTED_IMAGE_TYPES, validateImageFile, createId } from '../../lib/image.js';
@@ -111,7 +112,7 @@ function UploadQueue({ open, onClose, categories }) {
           <h2 id="upload-title" className="editor__title">
             Upload photos
           </h2>
-          <DialogClose onClick={onClose} />
+          {running ? null : <DialogClose onClick={onClose} />}
         </header>
         <div className="editor__body">
           <div
@@ -189,7 +190,7 @@ function UploadQueue({ open, onClose, categories }) {
         </div>
         <footer className="editor__foot">
           <p className="muted editor__note" aria-live="polite">
-            {failed ? `${failed} failed — fix or remove, then publish again.` : allDone ? 'All photos published.' : queue.length ? `${pending.length} ready to publish` : ''}
+            {failed ? `${failed} failed. Fix or remove them, then publish again.` : allDone ? 'All photos published.' : queue.length ? `${pending.length} ready to publish` : ''}
           </p>
           <div className="editor__buttons">
             <button type="button" className="btn" onClick={onClose} disabled={running}>
@@ -209,12 +210,14 @@ function UploadQueue({ open, onClose, categories }) {
 
 export default function GalleryManagerPage() {
   useDocumentTitle('Gallery settings');
-  const { items, save, remove, move, stage, busy } = useCollection('gallery', { folder: 'gallery', imageMap: IMAGE_MAP, noun: 'Photo' });
+  const { items, save, remove, move, stage, busy, moving, ready } = useCollection('gallery', { folder: 'gallery', imageMap: IMAGE_MAP, noun: 'Photo' });
   const [uploading, setUploading] = useState(false);
   const [draft, setDraft] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const categories = [...new Set(items.map((i) => i.category).filter(Boolean))];
+  const { content } = useContent();
+  const heroSrc = content.settings.heroImage;
 
   return (
     <>
@@ -229,6 +232,7 @@ export default function GalleryManagerPage() {
         }
       />
 
+      <ContentGate what="gallery">
       {items.length ? (
         <ul role="list" className="manage-list admin-panel">
           {items.map((item, index) => (
@@ -243,6 +247,7 @@ export default function GalleryManagerPage() {
                 index={index}
                 total={items.length}
                 onMove={(step) => move(item, step)}
+                disabled={moving}
                 onEdit={() => setDraft({ ...item })}
                 onDelete={() => setPendingDelete(item)}
               />
@@ -261,6 +266,7 @@ export default function GalleryManagerPage() {
           Use photos everyone in them is comfortable sharing.
         </EmptyState>
       )}
+      </ContentGate>
 
       <UploadQueue open={uploading} onClose={() => setUploading(false)} categories={categories} />
 
@@ -285,13 +291,17 @@ export default function GalleryManagerPage() {
       <ConfirmDialog
         open={Boolean(pendingDelete)}
         title="Remove this photo?"
-        message="It will be removed from the gallery and deleted from storage. This cannot be undone."
+        message={
+          pendingDelete && pendingDelete.src === heroSrc
+            ? 'It will be removed from the gallery. The file is kept because it is also the hero photo.'
+            : 'It will be removed from the gallery and deleted from storage. This cannot be undone.'
+        }
         confirmLabel="Remove photo"
         busy={deleting}
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {
           setDeleting(true);
-          await remove(pendingDelete);
+          await remove(pendingDelete, { keepFiles: pendingDelete.src === heroSrc });
           setDeleting(false);
           setPendingDelete(null);
         }}

@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Link, Navigate, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, m } from 'framer-motion';
 import AdminSidebar, { ADMIN_SECTIONS } from '../components/admin/AdminSidebar.jsx';
 import ThemeToggle from '../components/ThemeToggle.jsx';
 import Icon from '../components/Icon.jsx';
-import { LoadingState } from '../components/States.jsx';
+import { ErrorState, LoadingState } from '../components/States.jsx';
 import { ToastProvider } from '../components/Toast.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useContent } from '../context/ContentContext.jsx';
@@ -27,9 +27,24 @@ function NotAuthorised({ email, onSignOut }) {
   );
 }
 
+function AdminCheckFailed({ message, onRetry, onSignOut }) {
+  return (
+    <div className="admin-gate">
+      <div className="admin-gate__card">
+        <ErrorState title="Administrator access could not be checked" onRetry={onRetry}>
+          {message} This is a connection or configuration problem, not a missing permission.
+        </ErrorState>
+        <button type="button" className="btn btn--ghost" onClick={onSignOut}>
+          Sign out
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLayout() {
   const auth = useAuth();
-  const { content } = useContent();
+  const { content, status, reload } = useContent();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -37,6 +52,7 @@ export default function AdminLayout() {
 
   if (auth.status === 'loading') return <LoadingState label="Checking your session…" />;
   if (auth.status === 'signed-out') return <Navigate to="/admin/login" replace state={{ from: location.pathname }} />;
+  if (!auth.isAdmin && auth.error) return <AdminCheckFailed message={auth.error} onRetry={auth.recheck} onSignOut={auth.signOut} />;
   if (!auth.isAdmin) return <NotAuthorised email={auth.user?.email} onSignOut={auth.signOut} />;
 
   const current = [...ADMIN_SECTIONS].reverse().find((s) => location.pathname.startsWith(s.to)) ?? ADMIN_SECTIONS[0];
@@ -107,6 +123,19 @@ export default function AdminLayout() {
             ) : null}
           </AnimatePresence>
 
+          {status === 'error' ? (
+            <div className="banner banner--error admin-banner" role="alert">
+              <div className="banner__inner">
+                <span>
+                  <strong>Saved content could not be loaded.</strong> Editing is paused so defaults cannot overwrite published content.
+                </span>
+                <button type="button" className="btn btn--sm" onClick={reload}>
+                  Retry
+                </button>
+              </div>
+            </div>
+          ) : null}
+
           {backend === 'local' ? (
             <div className="banner banner--warning admin-banner" role="note">
               <div className="banner__inner">
@@ -119,7 +148,9 @@ export default function AdminLayout() {
           ) : null}
 
           <main id="admin-main" className="admin__content" tabIndex={-1}>
-            <Outlet />
+            <Suspense fallback={<LoadingState />}>
+              <Outlet />
+            </Suspense>
           </main>
         </div>
       </div>

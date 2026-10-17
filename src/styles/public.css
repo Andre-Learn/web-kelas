@@ -6,21 +6,47 @@
   z-index: 50;
   height: var(--nav-h);
   color: var(--text);
-  transition: background-color var(--dur-base) ease, border-color var(--dur-base) ease, box-shadow var(--dur-base) ease,
-    color var(--dur-base) ease;
+  transition: border-color var(--dur-base) ease, box-shadow var(--dur-base) ease, color var(--dur-base) ease;
   border-bottom: 1px solid transparent;
+  isolation: isolate;
 }
 
-.navbar--glass {
+/* Both backgrounds are separate layers that cross-fade, because gradients and
+ * backdrop-filter cannot be transitioned directly. */
+.navbar::before,
+.navbar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.navbar::before {
   background: var(--glass);
   -webkit-backdrop-filter: saturate(160%) blur(16px);
   backdrop-filter: saturate(160%) blur(16px);
+}
+
+.navbar::after {
+  background: linear-gradient(to bottom, rgba(5, 7, 12, 0.5), rgba(5, 7, 12, 0));
+}
+
+.navbar--glass {
   border-bottom-color: var(--glass-border);
   box-shadow: 0 6px 24px -18px rgba(0, 0, 0, 0.35);
 }
 
+.navbar--glass::before,
+.navbar--open::before,
+.navbar--over-photo::after {
+  opacity: 1;
+}
+
 @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .navbar--glass {
+  .navbar::before {
     background: var(--bg);
   }
 }
@@ -28,7 +54,6 @@
 /* Over the hero photo: transparent with a soft top shade for legible white text. */
 .navbar--over-photo {
   color: #f8fafc;
-  background: linear-gradient(to bottom, rgba(5, 7, 12, 0.5), rgba(5, 7, 12, 0));
 }
 
 .navbar__inner {
@@ -53,9 +78,9 @@
 .navbar__mark {
   display: inline-grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
   background: var(--text);
   color: var(--bg);
   font-size: 0.8125rem;
@@ -85,7 +110,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  padding: 0 14px;
+  padding: 0 16px;
   border-radius: var(--radius-full);
   font-size: var(--text-sm);
   font-weight: 500;
@@ -105,8 +130,8 @@
 .navbar__link.active::after {
   content: '';
   position: absolute;
-  left: 14px;
-  right: 14px;
+  left: 16px;
+  right: 16px;
   bottom: 8px;
   height: 2px;
   border-radius: 2px;
@@ -181,9 +206,6 @@
 }
 
 .navbar--open {
-  background: var(--glass);
-  -webkit-backdrop-filter: saturate(160%) blur(20px);
-  backdrop-filter: saturate(160%) blur(20px);
   border-bottom-color: var(--glass-border);
 }
 
@@ -378,8 +400,8 @@ main:focus {
   min-width: 44px;
   padding: var(--space-2);
   transform: translateX(-50%);
-  color: rgba(248, 250, 252, 0.7);
-  font-size: 0.6875rem;
+  color: rgba(248, 250, 252, 0.78);
+  font-size: var(--text-xs);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -413,8 +435,8 @@ main:focus {
 
 @media (min-width: 1024px) {
   .hero__actions .btn {
-    min-height: 50px;
-    padding-inline: 26px;
+    min-height: 52px;
+    padding-inline: 28px;
     font-size: var(--text-base);
   }
 }
@@ -642,7 +664,7 @@ main:focus {
 }
 
 .profile-card--sm .profile-card__name {
-  font-size: var(--text-md);
+  font-size: var(--text-card);
 }
 
 @media (min-width: 640px) {
@@ -767,14 +789,26 @@ main:focus {
 }
 
 .member-card__name {
-  font-size: var(--text-base);
+  font-size: var(--text-card);
   font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.01em;
   overflow-wrap: anywhere;
 }
 
+.member-card__photo {
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease;
+}
+
+.member-card:active .member-card__photo {
+  transform: scale(0.98);
+}
+
 @media (hover: hover) {
+  .member-card:hover .member-card__photo {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
   .member-card:hover .member-card__photo img {
     transform: scale(1.04);
   }
@@ -855,8 +889,8 @@ main:focus {
   right: var(--space-3);
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-full);
   background: rgba(11, 13, 18, 0.45);
   -webkit-backdrop-filter: blur(8px);
@@ -900,7 +934,7 @@ main:focus {
 }
 
 .chip {
-  min-height: 40px;
+  min-height: 44px;
   padding: 8px 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
@@ -1187,7 +1221,7 @@ main:focus {
 }
 
 .lightbox__title {
-  font-size: var(--text-md);
+  font-size: var(--text-card);
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -1195,7 +1229,7 @@ main:focus {
 .lightbox__date {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
   margin-top: var(--space-1);
   font-size: var(--text-sm);
   color: rgba(248, 250, 252, 0.65);
@@ -1228,8 +1262,9 @@ main:focus {
 }
 
 .breadcrumb a {
-  display: inline-block;
-  padding-block: 4px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 .breadcrumb a:hover {
@@ -1274,7 +1309,7 @@ main:focus {
 .search__input {
   width: 100%;
   min-height: 48px;
-  padding: 0 48px 0 46px;
+  padding: 0 48px 0 44px;
   border: 1px solid var(--border);
   border-radius: var(--radius-full);
   background: var(--surface);
@@ -1292,8 +1327,13 @@ main:focus {
 
 .search__input:focus {
   outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  border-color: var(--accent-strong);
+}
+
+/* Keyboard focus gets the same solid ring as every other control. */
+.search__input:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
 }
 
 .search__clear {
@@ -1303,8 +1343,8 @@ main:focus {
   transform: translateY(-50%);
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border: 0;
   border-radius: var(--radius-full);
   background: transparent;
@@ -1402,7 +1442,12 @@ main:focus {
   padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease, transform var(--dur-base) var(--ease-out),
+    box-shadow var(--dur-base) ease;
+}
+
+.about-next__link:active {
+  transform: translateY(1px);
 }
 
 .about-next__link .eyebrow {
@@ -1419,9 +1464,13 @@ main:focus {
   transition: transform var(--dur-fast) var(--ease-out);
 }
 
-.about-next__link:hover {
-  border-color: var(--border-strong);
-  background: var(--surface);
+@media (hover: hover) {
+  .about-next__link:hover {
+    border-color: var(--border-strong);
+    background: var(--surface);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .about-next__link:hover svg {
@@ -1608,4 +1657,39 @@ main:focus {
   place-items: center;
   min-height: 70vh;
   padding-top: var(--nav-h);
+}
+
+/* ---------- loading placeholders ---------- */
+
+.structure-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: var(--space-4);
+}
+
+.structure__more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
+.text-skeleton {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 640px;
+}
+
+.text-skeleton span {
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: var(--placeholder-a);
+}
+
+.text-skeleton span:first-child {
+  height: 40px;
+  width: 80%;
+}
+
+.text-skeleton span:last-child {
+  width: 60%;
 }

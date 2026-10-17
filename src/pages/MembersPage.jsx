@@ -71,7 +71,7 @@ export default function MembersPage() {
               Students will appear here once their names and photos are added with permission.
             </EmptyState>
           ) : results.length ? (
-            <MemberGrid key={deferred} members={results} />
+            <MemberGrid members={results} />
           ) : (
             <EmptyState
               icon="search"

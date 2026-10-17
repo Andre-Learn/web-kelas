@@ -1,0 +1,238 @@
+You are a senior React engineer, UI/UX engineer, and Supabase security specialist.
+
+The XI TJKT-1 website is already implemented. Its design mostly matches PRD.md and task.txt, but 38 gaps remain documented in:
+
+- PRD.md
+- task.txt
+- belum dikerakan.txt
+
+IMPORTANT:
+The latest audit confirmed that only belum dikerakan.txt was created.
+No source files were changed.
+No build or browser tests were run.
+
+Your task is to resolve the outstanding requirements by modifying
+the actual project source files.
+
+Do not merely audit the project again.
+Do not return only a plan.
+Do not rebuild the website from scratch.
+
+==================================================
+1. INSPECT THE PROJECT
+==================================================
+
+Read these files completely:
+- PRD.md
+- task.txt
+- belum dikerakan.txt
+
+Inspect the current source code and verify each finding against
+the actual implementation.
+
+The latest audit confirmed these issues:
+- Suspense wraps all Routes in src/App.jsx.
+- Admin forms can save default data before settings finish loading.
+- Starter officer slots have incorrect persistence behavior.
+- The hero title exceeds the intended mobile size.
+- Secondary text uses #5b6779 rather than #64748B.
+- Primary buttons use #7C3AED rather than #8B5CF6.
+- theme-color is fixed rather than synchronized with the theme.
+
+Other findings came from read-only sub-agents and have not all
+been manually verified.
+
+Verify every issue before changing it.
+
+==================================================
+2. FIX CRITICAL BUGS FIRST
+==================================================
+
+A. PUBLIC PAGE LOADING
+
+Move the page-level Suspense boundary inside PublicLayout,
+around the Outlet, so the navbar and footer remain visible
+while a public page loads.
+
+Preserve the existing routing behavior.
+
+B. ADMIN FORM DATA SAFETY
+
+Inspect AdminLayout.jsx, HeroSettingsPage.jsx,
+AboutManagerPage.jsx, AppearancePage.jsx, and their data hooks.
+
+Prevent saving default values before real data finishes loading.
+
+Requirements:
+- Respect loading, success, and error states.
+- Never allow a failed data request to silently replace saved data
+  with default form values.
+- Disable saving until initial data has loaded successfully.
+- Preserve existing saved content.
+- Provide clear loading, error, and retry states.
+
+C. OFFICER SLOT PERSISTENCE
+
+Inspect src/lib/api.js and all related structure management code.
+
+Fix starter officer slots so they cannot falsely appear persisted.
+
+Requirements:
+- Deleting an item must persist after reload.
+- Reordering must update the actual data or display a clear error.
+- Saving one slot must not reorder unrelated officers.
+- Adding a real officer must not silently remove or recreate records.
+- Never display success when no database change occurred.
+
+Preserve existing Supabase records.
+
+==================================================
+3. COMPLETE MISSING FEATURES
+==================================================
+
+A. HERO IMAGE SELECTION
+
+Allow an administrator to select an existing image from the
+available media library, in addition to uploading a new image.
+
+Reuse the existing storage model and avoid duplicate implementations.
+
+B. ABOUT LIVE PREVIEW
+
+Include all relevant About fields required by PRD.md,
+including community, story, and facts content.
+
+C. MOBILE MENU ACCESSIBILITY
+
+Implement:
+- Focus trapping while the menu is open
+- Background scroll locking
+- Escape-to-close
+- Focus restoration to the menu trigger
+- Keyboard-accessible navigation
+
+D. PAGE TRANSITIONS
+
+Add subtle vertical movement and appropriate exit transitions.
+Avoid unnecessary remounts and respect prefers-reduced-motion.
+
+E. RESPONSIVE IMAGES
+
+Use srcSet and sizes when suitable image variants exist.
+Use available thumbnail assets where appropriate.
+Do not invent image URLs or break existing fallbacks.
+
+==================================================
+4. DESIGN SYSTEM REFINEMENT
+==================================================
+
+Use PRD.md and task.txt as the source of truth.
+
+Fix:
+- Hero title exceeding the mobile type scale
+- Text below the required minimum sizes where applicable
+- Touch targets smaller than 44x44px
+- Insufficient accent contrast in light mode
+- Spacing values inconsistent with the 4px scale
+- Fixed theme-color metadata
+- Weak keyboard focus indicators
+- Navbar transitions
+- Unnecessary button glow
+- Missing interactive card feedback
+
+The existing changes to secondary text and primary button colors
+appear intentional and improve contrast.
+
+Do not blindly revert those colors just to match a token.
+Evaluate actual contrast and document any justified deviation
+from the design tokens.
+
+Check all supported accent colors, especially teal and amber.
+
+Avoid a complete redesign.
+Keep the existing visual identity and improve consistency.
+
+==================================================
+5. HANDLE THE REMAINING AUDIT GAPS
+==================================================
+
+Read every item in belum dikerakan.txt.
+
+Classify each item as:
+- Confirmed issue
+- Already resolved
+- Not reproducible
+- Requires clarification
+
+Fix every confirmed issue that can be addressed safely.
+
+Do not silently skip an item.
+
+For database schema changes:
+- Inspect existing records first.
+- Preserve existing data.
+- Explain required migrations.
+- Do not claim a remote Supabase database was changed when
+  only a local SQL file was edited.
+- Never expose service-role or secret keys to frontend code.
+
+==================================================
+6. IMPLEMENTATION RULES
+==================================================
+
+Make changes directly to the existing source files.
+
+Do not:
+- Rebuild the application from scratch.
+- Delete working functionality.
+- Replace the framework.
+- Overwrite real user data with placeholders.
+- Introduce unnecessary dependencies.
+- Claim functionality works without testing it.
+
+Work in small, coherent phases.
+
+After each phase:
+1. Review the modified files.
+2. Check for obvious regressions.
+3. Run available static checks.
+4. Continue to the next phase.
+
+==================================================
+7. FINAL VERIFICATION
+==================================================
+
+Run the production build in a compatible environment.
+
+Android shared storage may cause native Rollup or esbuild
+execution problems. If necessary, use a working copy in
+Termux internal storage.
+
+Do not repeatedly run a command that is known to fail because
+of the filesystem.
+
+If browser automation is available, test:
+- Public routes
+- Navbar and footer during page loading
+- Mobile navigation and focus management
+- Light and dark themes
+- Hero image selection
+- About live preview
+- Admin loading and saving
+- Officer deletion and reordering
+- Responsive image behavior
+
+If browser testing is unavailable, explicitly report that limitation.
+
+At completion, provide:
+1. Confirmed findings fixed
+2. Files changed
+3. Findings intentionally left unresolved and why
+4. Production build results
+5. Actual browser test results, if available
+6. Any SQL migration that still needs to be applied manually
+
+START NOW.
+
+Read the three project documents and begin fixing the confirmed
+issues. Do not stop after inspection or planning.

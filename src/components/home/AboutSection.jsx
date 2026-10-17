@@ -4,9 +4,25 @@ import Icon from '../Icon.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
 
 export default function AboutSection() {
-  const { content } = useContent();
+  const { content, status } = useContent();
+  // Default copy is never shown in place of the real text while it loads.
+  const loading = status === 'loading';
   const { about, className } = content.settings;
   const facts = about.facts.filter((f) => f.label && f.value);
+
+  if (loading) {
+    return (
+      <section id="about" className="section about" aria-busy="true" aria-label="About the class">
+        <div className="container about__grid">
+          <div className="text-skeleton" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="about" className="section about" aria-labelledby="about-title">

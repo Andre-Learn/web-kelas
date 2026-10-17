@@ -76,7 +76,7 @@ function readLocal() {
     const parsed = JSON.parse(raw);
     return {
       settings: mergeSettings(parsed.settings),
-      officers: parsed.officers ?? defaultContent.officers,
+      officers: parsed.officers ?? [],
       members: parsed.members ?? [],
       gallery: parsed.gallery ?? [],
     };
@@ -89,7 +89,7 @@ function writeLocal(content) {
   try {
     localStorage.setItem(LOCAL_KEY, JSON.stringify(content));
   } catch {
-    throw new Error('Browser storage is full. Local preview can only hold a few images — remove some and try again.');
+    throw new Error('Browser storage is full. Local preview can only hold a few images. Remove some and try again.');
   }
 }
 
@@ -110,7 +110,8 @@ export async function fetchContent() {
 
   return {
     settings: mergeSettings(settings.data?.data),
-    officers: officers.data.length ? officers.data.map((r) => fromRow('officers', r)) : defaultContent.officers,
+    // An empty table means nothing is published yet. Starter roles are never shown as if they were saved.
+    officers: officers.data.map((r) => fromRow('officers', r)),
     members: members.data.map((r) => fromRow('members', r)),
     gallery: gallery.data.map((r) => fromRow('gallery', r)),
   };
@@ -129,71 +130,110 @@ export async function saveSettings(settings) {
 }
 
 export async function saveItem(collection, item, index) {
-  const record = { ...item, id: item.id && !item.id.startsWith('slot-') ? item.id : createId() };
+  const record = { ...item, id: item.id || createId() };
   if (backend === 'local') {
     const content = readLocal();
     const list = content[collection];
     const at = list.findIndex((x) => x.id === item.id);
-    if (at >= 0) list[at] = record;
-    else list.push(record);
+    const stored = { ...record, order: at >= 0 ? at : list.length };
+    if (at >= 0) list[at] = stored;
+    else list.push(stored);
     writeLocal(content);
-    return record;
+    return stored;
   }
-  // Slot ids come from the starter data and do not exist in the database yet.
-  if (item.id?.startsWith('slot-')) await persistSlots(collection, item.id, record);
   const { data, error } = await supabase
     .from(COLLECTIONS[collection].table)
     .upsert(toRow(collection, record, index))
     .select()
     .single();
   if (error) throw new Error(error.message);
-  return { ...fromRow(collection, data), __reload: Boolean(record.__reload) };
+  return fromRow(collection, data);
 }
 
-// The first real officer save writes the remaining starter role slots too, so they are not lost.
-async function persistSlots(collection, replacingId, record) {
-  if (collection !== 'officers') return;
-  const { count } = await supabase.from('officers').select('id', { count: 'exact', head: true });
-  if (count) return;
-  const rows = defaultContent.officers
-    .map((slot, i) => (slot.id === replacingId ? null : toRow('officers', { ...slot, id: createId() }, i)))
-    .filter(Boolean);
-  const { error } = await supabase.from('officers').insert(rows);
+/** Inserts several new records in one request, so either all of them are saved or none are. */
+export async function insertItems(collection, items, startIndex = 0) {
+  const records = items.map((item, i) => ({ ...item, id: createId(), order: startIndex + i }));
+  if (backend === 'local') {
+    const content = readLocal();
+    content[collection] = [...content[collection], ...records];
+    writeLocal(content);
+    return records;
+  }
+  const { data, error } = await supabase
+    .from(COLLECTIONS[collection].table)
+    .insert(records.map((r) => toRow(collection, r, r.order)))
+    .select();
   if (error) throw new Error(error.message);
-  record.__reload = true;
+  return data.map((r) => fromRow(collection, r)).sort((a, b) => a.order - b.order);
 }
 
-export async function deleteItem(collection, item) {
+export async function deleteItem(collection, item, { keepFiles = false } = {}) {
   if (backend === 'local') {
     const content = readLocal();
     content[collection] = content[collection].filter((x) => x.id !== item.id);
     writeLocal(content);
     return;
   }
-  if (!item.id.startsWith('slot-')) {
-    const { error } = await supabase.from(COLLECTIONS[collection].table).delete().eq('id', item.id);
-    if (error) throw new Error(error.message);
-  }
-  const paths = [item.path, item.photoPath].filter(Boolean).flatMap((p) => [p, thumbPathOf(p)]);
-  // Storage cleanup failures should not undo a successful delete.
-  if (paths.length) await supabase.storage.from(STORAGE_BUCKET).remove(paths).catch(() => {});
+  const { data, error } = await supabase.from(COLLECTIONS[collection].table).delete().eq('id', item.id).select('id');
+  if (error) throw new Error(error.message);
+  // RLS can filter a delete down to zero rows without raising an error.
+  if (!data?.length) throw new Error('Nothing was deleted. The item may already be gone, or this account cannot delete it.');
+  if (!keepFiles) await removeStoredFiles([item.path, item.photoPath]);
 }
 
+/**
+ * Persists a new order. Only rows whose position changed are written, in a single upsert,
+ * so a failure leaves the previous order intact instead of a half-saved one.
+ */
 export async function saveOrder(collection, items) {
+  const ordered = items.map((item, i) => ({ ...item, order: i }));
   if (backend === 'local') {
     const content = readLocal();
-    content[collection] = items;
+    content[collection] = ordered;
     writeLocal(content);
-    return items;
+    return ordered;
   }
-  const real = items.filter((x) => !x.id.startsWith('slot-'));
-  const rows = real.map((item) => ({ id: item.id, sort_order: items.indexOf(item) }));
-  for (const row of rows) {
-    const { error } = await supabase.from(COLLECTIONS[collection].table).update({ sort_order: row.sort_order }).eq('id', row.id);
-    if (error) throw new Error(error.message);
-  }
-  return items;
+  const changed = ordered.filter((item, i) => items[i].order !== i);
+  if (!changed.length) return ordered;
+  const { data, error } = await supabase
+    .from(COLLECTIONS[collection].table)
+    .upsert(changed.map((item) => toRow(collection, item, item.order)))
+    .select('id');
+  if (error) throw new Error(error.message);
+  if ((data?.length ?? 0) !== changed.length) throw new Error('The new order was not saved for every item. Reload and try again.');
+  return ordered;
 }
+
+/** Deletes uploaded files and their thumbnails. Cleanup failures never undo a successful save or delete. */
+export async function removeStoredFiles(paths) {
+  if (backend !== 'supabase') return;
+  const all = paths.filter(Boolean).flatMap((p) => [p, thumbPathOf(p)]);
+  if (!all.length) return;
+  try {
+    await supabase.storage.from(STORAGE_BUCKET).remove(all);
+  } catch {
+    /* orphaned files are harmless; they are only unused storage */
+  }
+}
+
+/** Storage path of a public URL from this project's media bucket, or '' for anything else. */
+export function storagePathFromUrl(url) {
+  const marker = `/storage/v1/object/public/${STORAGE_BUCKET}/`;
+  const at = url ? url.indexOf(marker) : -1;
+  return at < 0 ? '' : decodeURIComponent(url.slice(at + marker.length).split('?')[0]);
+}
+
+/**
+ * Thumbnail URL for an uploaded image. Every upload writes "<name>-thumb.<ext>" next to the
+ * full file, so the thumbnail is derived from the stored path rather than guessed.
+ */
+export function thumbUrlOf(url, path) {
+  if (!url || !path || backend !== 'supabase' || !url.includes(path)) return '';
+  return url.replace(path, thumbPathOf(path));
+}
+
+// Longest side of the thumbnail rendition written by uploadImage.
+export const THUMB_SIZE = backend === 'local' ? 480 : 640;
 
 function thumbPathOf(path) {
   return path.replace(/(\.[a-z]+)$/i, '-thumb$1');
@@ -206,7 +246,7 @@ function thumbPathOf(path) {
 export async function uploadImage(file, folder, onStage = () => {}) {
   onStage('processing');
   const local = backend === 'local';
-  const { full, thumb } = await prepareImage(file, local ? { maxSize: 1280, thumbSize: 480, quality: 0.72 } : undefined);
+  const { full, thumb } = await prepareImage(file, local ? { maxSize: 1280, thumbSize: THUMB_SIZE, quality: 0.72 } : { thumbSize: THUMB_SIZE });
 
   onStage('uploading');
   if (local) {
@@ -223,7 +263,11 @@ export async function uploadImage(file, folder, onStage = () => {}) {
     bucket.upload(path, full.blob, options),
     bucket.upload(thumbPathOf(path), thumb.blob, options),
   ]);
-  if (a.error || b.error) throw new Error((a.error || b.error).message);
+  if (a.error || b.error) {
+    // Do not leave half an upload behind.
+    await bucket.remove([a.error ? null : path, b.error ? null : thumbPathOf(path)].filter(Boolean)).catch(() => {});
+    throw new Error((a.error || b.error).message);
+  }
 
   onStage('done');
   return {

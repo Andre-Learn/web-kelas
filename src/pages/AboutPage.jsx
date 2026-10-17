@@ -3,18 +3,34 @@ import PageHeader from '../components/PageHeader.jsx';
 import { Reveal } from '../components/Reveal.jsx';
 import Photo from '../components/Photo.jsx';
 import Icon from '../components/Icon.jsx';
+import { LoadingState } from '../components/States.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { useContent } from '../context/ContentContext.jsx';
 
 export default function AboutPage() {
   useDocumentTitle('About');
-  const { content } = useContent();
+  const { content, status } = useContent();
+  // Default copy is never shown in place of the real text while it loads.
+  const loading = status === 'loading';
   const { about, className, heroImage, heroAlt } = content.settings;
   const story = about.story
     .split(/\n\s*\n/)
     .map((p) => p.trim())
     .filter(Boolean);
   const facts = about.facts.filter((f) => f.label && f.value);
+
+  if (loading) {
+    return (
+      <>
+        <PageHeader eyebrow="Our class" title={`About ${className}`} />
+        <section className="section section--tight" aria-busy="true">
+          <div className="container">
+            <LoadingState label="Loading the class story…" />
+          </div>
+        </section>
+      </>
+    );
+  }
 
   return (
     <>

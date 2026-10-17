@@ -48,7 +48,7 @@ export default function GalleryPage() {
           {status === 'loading' ? (
             <SkeletonGrid count={6} className="gallery-skeleton" ratio="4 / 3" />
           ) : shown.length ? (
-            <GalleryGrid key={category} images={shown} />
+            <GalleryGrid images={shown} />
           ) : (
             <EmptyState title={images.length ? 'No photos in this category' : 'No photos yet'}>
               {images.length ? 'Choose another category to keep browsing.' : 'The first class memories will be shared here soon.'}

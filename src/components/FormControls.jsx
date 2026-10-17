@@ -69,7 +69,7 @@ export function Select({ label, hint, error, options, ...props }) {
  * Picks one image, validates it, and shows a local preview.
  * Nothing is uploaded here; the parent decides when to upload.
  */
-export function ImagePicker({ label, currentSrc, file, onFileChange, hint, ratio = '16 / 9', onRemove }) {
+export function ImagePicker({ label, currentSrc, file, onFileChange, hint, ratio = '16 / 9', onRemove, actions, badge }) {
   const id = useId();
   const inputRef = useRef(null);
   const [error, setError] = useState('');
@@ -123,7 +123,7 @@ export function ImagePicker({ label, currentSrc, file, onFileChange, hint, ratio
             <span>Drop an image here or choose a file</span>
           </div>
         )}
-        {preview ? <span className="picker__badge">New — not saved yet</span> : null}
+        {preview || badge ? <span className="picker__badge">{preview ? 'New, not saved yet' : badge}</span> : null}
       </div>
       <div className="picker__actions">
         <input
@@ -138,8 +138,9 @@ export function ImagePicker({ label, currentSrc, file, onFileChange, hint, ratio
         />
         <label htmlFor={id} className="btn btn--sm">
           <Icon name="upload" size={16} />
-          {shown ? 'Replace image' : 'Choose image'}
+          {shown ? 'Replace image' : 'Upload image'}
         </label>
+        {actions}
         {file ? (
           <button type="button" className="btn btn--sm btn--ghost" onClick={() => onFileChange(null)}>
             Undo

@@ -3,6 +3,15 @@ import Photo from './Photo.jsx';
 import Icon from './Icon.jsx';
 import Lightbox from './Lightbox.jsx';
 import { RevealGroup, RevealItem } from './Reveal.jsx';
+import { THUMB_SIZE } from '../lib/api.js';
+
+// Only real renditions: the stored thumbnail and the full upload, with widths derived from the stored size.
+function srcSetOf(image) {
+  if (!image.thumb || !image.src || image.thumb === image.src || !image.width || !image.height) return undefined;
+  const thumbW = Math.round(image.width * Math.min(1, THUMB_SIZE / Math.max(image.width, image.height)));
+  if (thumbW >= image.width) return undefined;
+  return `${image.thumb} ${thumbW}w, ${image.src} ${image.width}w`;
+}
 
 function shapeOf(image) {
   if (!image.width || !image.height) return 'square';
@@ -32,6 +41,7 @@ export default function GalleryGrid({ images }) {
               >
                 <Photo
                   src={image.thumb || image.src}
+                  srcSet={srcSetOf(image)}
                   alt={image.alt || image.caption || ''}
                   ratio={ratio}
                   width={image.width || undefined}

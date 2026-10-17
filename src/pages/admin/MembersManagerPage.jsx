@@ -9,13 +9,14 @@ import Icon from '../../components/Icon.jsx';
 import { EmptyState } from '../../components/States.jsx';
 import useCollection from '../../hooks/useCollection.js';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
+import ContentGate from '../../components/admin/ContentGate.jsx';
 
 const IMAGE_MAP = { src: 'photo', thumb: 'photoThumb', path: 'photoPath' };
 const EMPTY = { name: '', number: '', intro: '', photo: '', photoThumb: '' };
 
 export default function MembersManagerPage() {
   useDocumentTitle('Member settings');
-  const { items, save, remove, move, stage, busy } = useCollection('members', { folder: 'members', imageMap: IMAGE_MAP, noun: 'Member' });
+  const { items, save, remove, move, stage, busy, moving, ready } = useCollection('members', { folder: 'members', imageMap: IMAGE_MAP, noun: 'Member' });
   const [draft, setDraft] = useState(null);
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
@@ -60,6 +61,7 @@ export default function MembersManagerPage() {
         }
       />
 
+      <ContentGate what="members">
       {items.length ? (
         <section className="admin-panel">
           <div className="manage-toolbar">
@@ -91,6 +93,7 @@ export default function MembersManagerPage() {
                       total={items.length}
                       canMove={!filter}
                       onMove={(step) => move(item, step)}
+                      disabled={moving}
                       onEdit={() => open(item)}
                       onDelete={() => setPendingDelete(item)}
                     />
@@ -115,6 +118,7 @@ export default function MembersManagerPage() {
           Add students one at a time. You can set their order afterwards.
         </EmptyState>
       )}
+      </ContentGate>
 
       <EditorDialog open={Boolean(draft)} title={draft?.id ? `Edit ${draft.name}` : 'Add member'} onClose={() => setDraft(null)} onSubmit={submit} busy={busy} stage={stage}>
         {draft ? (

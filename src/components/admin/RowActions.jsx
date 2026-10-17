@@ -1,19 +1,19 @@
 import Icon from '../Icon.jsx';
 
 /** Reorder / edit / delete buttons for one row in a managed list. */
-export default function RowActions({ label, index, total, onMove, onEdit, onDelete, canMove = true }) {
+export default function RowActions({ label, index, total, onMove, onEdit, onDelete, canMove = true, disabled = false }) {
   return (
     <div className="row-actions">
       {canMove ? (
         <>
-          <button type="button" className="btn btn--icon btn--sm btn--ghost" onClick={() => onMove(-1)} disabled={index === 0} aria-label={`Move ${label} up`}>
+          <button type="button" className="btn btn--icon btn--sm btn--ghost" onClick={() => onMove(-1)} disabled={disabled || index === 0} aria-label={`Move ${label} up`}>
             <Icon name="arrowUp" size={16} />
           </button>
           <button
             type="button"
             className="btn btn--icon btn--sm btn--ghost"
             onClick={() => onMove(1)}
-            disabled={index === total - 1}
+            disabled={disabled || index === total - 1}
             aria-label={`Move ${label} down`}
           >
             <Icon name="arrowDown" size={16} />

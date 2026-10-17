@@ -1,0 +1,179 @@
+XI TJKT-1 - Requirements not yet done (audit vs PRD.md and task.txt)
+=====================================================================
+This audit was read-only. No source files were changed.
+Most requirements are met. Only the gaps and deviations are listed below.
+Paths are relative to the project root. Line numbers refer to the code at audit time.
+
+
+A. PUBLIC WEBSITE
+-----------------
+
+A1. [Bug] Navbar and footer disappear while a page loads (PRD 4/5, 17.15)
+    - <Suspense> wraps all of <Routes> (src/App.jsx:33), outside PublicLayout.
+    - The first visit to /structure, /members, /gallery or /about swaps the
+      whole layout for the loading spinner.
+    - Fix direction: put a Suspense around <Outlet/> inside PublicLayout.
+
+A2. Mobile menu has no focus trap or scroll lock (PRD 5.1, 12)
+    - Tab can leave the panel and reach the page behind the scrim
+      (src/components/Navbar.jsx:43).
+    - The page behind the open menu can still scroll.
+
+A3. Reveal animations replay on every search keystroke or filter change (PRD 10.2)
+    - <MemberGrid key={deferred}> (src/pages/MembersPage.jsx:74)
+    - <GalleryGrid key={category}> (src/pages/GalleryPage.jsx:51)
+
+A4. Page transitions fade only, with no vertical movement or exit (PRD 10.1)
+    - src/layouts/PublicLayout.jsx:33-39 (opacity only, no AnimatePresence).
+
+A5. Placeholder content shows while data loads (PRD 17.11, task.txt "placeholder as real")
+    - The hero shows "Class photo coming soon", then swaps to the real photo
+      (src/components/Hero.jsx:38-47).
+    - Structure (home and page) shows "Not yet announced" slots while loading
+      (src/components/home/StructureSection.jsx:24, src/pages/StructurePage.jsx:19-20).
+    - About shows the default copy until data arrives.
+
+A6. Homepage Structure section
+    - Officers beyond the first 4 are hidden, but the computed "hidden" count
+      is never shown (src/components/StructureChart.jsx:14).
+    - There is no empty state when officers is empty
+      (src/components/home/StructureSection.jsx:24).
+
+A7. No responsive image sizes (PRD 6.5 Performance, 13)
+    - sizes is passed without srcSet, so it does nothing
+      (src/components/GalleryGrid.jsx:39, src/components/Photo.jsx:40).
+    - The hero always loads the full heroImage. heroImageThumb is never used
+      on the public site (src/components/Hero.jsx:39).
+
+A8. Gallery order: masonry CSS columns fill top to bottom, so lightbox
+    "next" can jump to another column instead of the photo to the right
+    (src/styles/public.css:792). Minor.
+
+A9. theme-color is fixed to #0B0D12 (index.html:7). Light mode gets a dark
+    browser bar until React updates it.
+
+
+B. DESIGN SYSTEM / CSS
+----------------------
+
+B1. Color tokens differ from the PRD (both changes improve contrast, but neither is documented)
+    - Light secondary text is #5b6779, not #64748B (src/styles/tokens.css:53).
+    - The primary button uses #7C3AED, not accent #8B5CF6
+      (src/styles/base.css:218, tokens.css:71).
+
+B2. Inter is not loaded, only named as a fallback (tokens.css:4). Optional in the PRD.
+
+B3. Type scale out of PRD range
+    - The hero title is above 48px on mobile widths 561-767px (59px at 767px)
+      (tokens.css:35: clamp(2.25rem, 1.15rem + 5.3vw, 5rem)).
+    - Card titles below 18px:
+        .member-card__name 16px (public.css:770)
+        .profile-card--sm .profile-card__name 17px (public.css:645)
+        .admin-panel__title 17px (admin.css:443)
+        .lightbox__title 17px (public.css:1190)
+    - .hero__scroll label is 11px, below 12px (public.css:382).
+
+B4. Touch targets below 44px (task.txt 9, ui-ux rule)
+    - .btn--sm min-height 36 (base.css:249)
+    - .btn--icon.btn--sm 36x36 (base.css:259-261)
+    - .row-actions icon buttons 40x40 (admin.css:706-709)
+    - .chip min-height 40 (public.css:903)
+    - .search__clear 40x40 (public.css:1306-1307)
+    - .toast__close 32x32 (admin.css:1136-1137)
+    - .breadcrumb a about 30px tall (public.css:1230-1233)
+    - .summary-card__link has no min-height (admin.css:602-607)
+
+B5. Spacing values off the 4px scale (PRD 4.4)
+    - 10px: .btn padding (base.css:190), .input (admin.css:96), badges (admin.css:199,947)
+    - 14px: .navbar__link (public.css:88), .btn--sm (base.css:250)
+    - 26px hero buttons (public.css:417), 34px (public.css:56-57,858-859),
+      46px search padding (public.css:1277), 6px gaps (admin.css:58,84)
+
+B6. Breakpoints are scattered (380/560/600/640/720/768/900/960/1024/1200).
+    None targets 1440. Desktop nav switches at 900px, not 1024px (public.css:218).
+
+B7. Contrast failures with admin-selectable accents (default violet passes)
+    - Teal light: #14B8A6 on white is 2.49:1, below 3:1 for non-text
+      (nav underline public.css:117, icon :215, focus border :1295, spinner :1569).
+    - Amber light: #B45309 on #EEF2F7 is 4.47:1, below 4.5:1 for the .eyebrow
+      text (base.css:165).
+
+B8. The navbar transparent-to-glass change is partly abrupt. Background
+    gradient and backdrop-filter are not in the transition list
+    (public.css:9-10, 31). PRD 5.1 requires a smooth transition.
+
+B9. Primary button hover has a colored glow (base.css:225). task.txt avoids glow effects.
+
+B10. Weak input focus: the outline is removed and replaced by a faint 10% ring
+     (public.css:1293-1297, admin.css:114-118). PRD 12 requires visible focus.
+
+B11. The theme fade still runs under prefers-reduced-motion
+     (base.css:32-38 overrides base.css:311). Low impact.
+
+B12. Some interactive cards have no hover elevation:
+     .about-next__link, .shortcut, .member-card (photo zoom only). PRD 10.3.
+
+
+C. ADMIN DASHBOARD
+------------------
+
+C1. [Bug] Defaults can overwrite real settings
+    - AdminLayout never checks content.status (src/layouts/AdminLayout.jsx:32, 38-40).
+    - The Hero, About and Appearance forms fill their fields once on first render
+      (HeroSettingsPage.jsx:16-24, AboutManagerPage.jsx:11, AppearancePage.jsx:12-14).
+    - If a save happens before content loads, or after loading failed, defaults
+      are written over the real data.
+
+C2. [Bug] Starter officer slots ("slot-" ids) look saved but are not
+    - Deleting a slot shows "Officer removed." but the slot returns on reload
+      (src/lib/api.js:173-176, 113).
+    - Reordering slots is skipped without an error (api.js:189).
+    - The first slot save re-inserts the other slots in default order
+      (api.js:158-160).
+    - Adding a non-slot officer while the table is empty drops all slots
+      (api.js:143).
+    - Conflicts with task.txt 7: "Do not pretend data has been saved".
+
+C3. Hero image "select" is missing. You can upload, but you cannot pick an
+    existing image (src/pages/admin/HeroSettingsPage.jsx:65-75). PRD 8.3.
+
+C4. About preview is partial. It shows only headline, intro and identity.
+    Community, story and facts are not previewed
+    (src/pages/admin/AboutManagerPage.jsx:81-90). PRD 8.4.
+
+C5. Old storage files are never deleted on hero or photo replace/remove,
+    or after a failed upload or save (api.js:222-226, GalleryManagerPage.jsx:87-91,
+    StructureManagerPage.jsx:99, MembersManagerPage.jsx:128). PRD 15 (remove content).
+
+C6. Upload progress is a fixed 3-step stage bar, not a real percentage
+    (src/components/FormControls.jsx:169-180). PRD 8.7. Minor.
+
+C7. The editor dialog X button can close during an upload. The queue is cleared
+    while uploads continue (EditorDialog.jsx:22, GalleryManagerPage.jsx:114).
+
+C8. Admin-check errors are hidden. A failed checkAdmin only shows
+    "not an administrator" (AuthContext.jsx:26-27, AdminLayout.jsx:40).
+
+C9. Public sign-up is disabled only by a manual Supabase dashboard setting
+    (supabase/schema.sql:3). RLS still blocks writes. PRD 8.9 says "No public
+    administrator registration".
+
+C10. No database-side validation: accent value (schema.sql:21-25), unique
+     member number (schema.sql:38-47), and storage update policy without
+     "with check" (schema.sql:94).
+
+C11. Reorder writes rows one by one. A failure leaves a half-saved order
+     (api.js:191-194, useCollection.js:76-78).
+
+C12. Appearance has only accent, name, tagline and hero image. No
+     "other supported visual settings" (PRD 8.8). Minor.
+
+C13. No draft or unpublished state. All content is publicly readable
+     (schema.sql:80). PRD 15 "unpublished content not exposed".
+
+
+D. NOT VERIFIED
+---------------
+- No production build or browser test was run during this audit.
+- Responsive layouts, console errors and hero text contrast over a real photo
+  still need a device or browser check.

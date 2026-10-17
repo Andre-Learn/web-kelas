@@ -10,6 +10,7 @@ export function ContentProvider({ children }) {
   const [error, setError] = useState('');
 
   const reload = useCallback(async () => {
+    setStatus((s) => (s === 'error' ? 'loading' : s));
     try {
       const data = await fetchContent();
       setContent(data);

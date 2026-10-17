@@ -9,7 +9,8 @@ import Icon from '../../components/Icon.jsx';
 import { EmptyState } from '../../components/States.jsx';
 import useCollection from '../../hooks/useCollection.js';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
-import { OFFICER_TIERS } from '../../data/defaultContent.js';
+import { OFFICER_TIERS, STARTER_ROLES } from '../../data/defaultContent.js';
+import ContentGate from '../../components/admin/ContentGate.jsx';
 
 const IMAGE_MAP = { src: 'photo', path: 'photoPath' };
 const EMPTY = { name: '', role: '', tier: 'officer', description: '', photo: '' };
@@ -17,7 +18,7 @@ const tierLabel = Object.fromEntries(OFFICER_TIERS.map((t) => [t.id, t.label]));
 
 export default function StructureManagerPage() {
   useDocumentTitle('Structure settings');
-  const { items, save, remove, move, stage, busy } = useCollection('officers', { folder: 'officers', imageMap: IMAGE_MAP, noun: 'Officer' });
+  const { items, save, addMany, remove, move, stage, busy, moving, ready } = useCollection('officers', { folder: 'officers', imageMap: IMAGE_MAP, noun: 'Officer' });
   const [draft, setDraft] = useState(null);
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
@@ -47,13 +48,14 @@ export default function StructureManagerPage() {
         title="Structure"
         description="Homeroom teacher and class officers. Leave a name empty to show the role as “Not yet announced”."
         actions={
-          <button type="button" className="btn btn--primary" onClick={() => open(null)}>
+          <button type="button" className="btn btn--primary" onClick={() => open(null)} disabled={!ready}>
             <Icon name="plus" size={16} />
             Add officer
           </button>
         }
       />
 
+      <ContentGate what="class structure">
       {items.length ? (
         <ul role="list" className="manage-list admin-panel">
           {items.map((item, index) => (
@@ -70,6 +72,7 @@ export default function StructureManagerPage() {
                 index={index}
                 total={items.length}
                 onMove={(step) => move(item, step)}
+                disabled={moving}
                 onEdit={() => open(item)}
                 onDelete={() => setPendingDelete(item)}
               />
@@ -77,8 +80,29 @@ export default function StructureManagerPage() {
           ))}
         </ul>
       ) : (
-        <EmptyState icon="structure" title="No officers yet" action={<button type="button" className="btn btn--sm" onClick={() => open(null)}>Add officer</button>} />
+        <EmptyState
+          icon="structure"
+          title="No officers published yet"
+          action={
+            <div className="state__buttons">
+              <button
+                type="button"
+                className="btn btn--sm btn--primary"
+                disabled={busy}
+                onClick={() => addMany(STARTER_ROLES, 'Standard roles added. Fill in the names when they are confirmed.')}
+              >
+                {busy ? 'Adding…' : 'Add standard roles'}
+              </button>
+              <button type="button" className="btn btn--sm" onClick={() => open(null)}>
+                Add one officer
+              </button>
+            </div>
+          }
+        >
+          Standard roles are homeroom teacher, president, vice president, secretary, and treasurer. They are saved with empty names and shown as “Not yet announced”.
+        </EmptyState>
       )}
+      </ContentGate>
 
       <EditorDialog
         open={Boolean(draft)}

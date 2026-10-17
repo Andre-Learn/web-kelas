@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader.jsx';
-import { ImagePicker, TextInput, UploadStatus } from '../../components/FormControls.jsx';
+import { TextInput, UploadStatus } from '../../components/FormControls.jsx';
+import ContentGate from '../../components/admin/ContentGate.jsx';
+import HeroImageField, { EMPTY_HERO_IMAGE, heroImagePatch } from '../../components/admin/HeroImageField.jsx';
 import useSettingsForm from '../../hooks/useSettingsForm.js';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
 
@@ -12,7 +14,18 @@ function validHref(v) {
 
 export default function HeroSettingsPage() {
   useDocumentTitle('Hero settings');
-  const { settings, save, stage, busy } = useSettingsForm();
+  return (
+    <>
+      <AdminPageHeader title="Hero" description="The first thing visitors see: the class photo, name, tagline, and two buttons." />
+      <ContentGate what="hero settings">
+        <HeroForm />
+      </ContentGate>
+    </>
+  );
+}
+
+function HeroForm() {
+  const { settings, save, stage, busy, ready } = useSettingsForm();
   const [form, setForm] = useState(() => ({
     className: settings.className,
     tagline: settings.tagline,
@@ -22,8 +35,7 @@ export default function HeroSettingsPage() {
     secondaryLabel: settings.ctaSecondary.label,
     secondaryHref: settings.ctaSecondary.href,
   }));
-  const [file, setFile] = useState(null);
-  const [removeImage, setRemoveImage] = useState(false);
+  const [image, setImage] = useState(EMPTY_HERO_IMAGE);
   const [errors, setErrors] = useState({});
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -39,6 +51,7 @@ export default function HeroSettingsPage() {
     setErrors(next);
     if (Object.keys(next).length) return;
 
+    const { patch, upload } = heroImagePatch(image);
     const ok = await save(
       {
         className: form.className.trim(),
@@ -46,32 +59,21 @@ export default function HeroSettingsPage() {
         heroAlt: form.heroAlt.trim(),
         ctaPrimary: { label: form.primaryLabel.trim(), href: form.primaryHref.trim() },
         ctaSecondary: { label: form.secondaryLabel.trim(), href: form.secondaryHref.trim() },
-        ...(removeImage && !file ? { heroImage: '', heroImageThumb: '' } : {}),
+        ...patch,
       },
-      { file, imageKey: 'heroImage', thumbKey: 'heroImageThumb', folder: 'hero', message: 'Hero updated.' },
+      { ...upload, message: 'Hero updated.' },
     );
-    if (ok) {
-      setFile(null);
-      setRemoveImage(false);
-    }
+    if (ok) setImage(EMPTY_HERO_IMAGE);
   };
 
   return (
-    <>
-      <AdminPageHeader title="Hero" description="The first thing visitors see: the class photo, name, tagline, and two buttons." />
-      <form className="admin-form" onSubmit={submit} noValidate>
+    <form className="admin-form" onSubmit={submit} noValidate>
         <section className="admin-panel form">
           <h2 className="admin-panel__title">Photo</h2>
-          <ImagePicker
-            label="Hero photograph"
-            currentSrc={removeImage ? '' : settings.heroImage}
-            file={file}
-            onFileChange={(f) => {
-              setFile(f);
-              if (f) setRemoveImage(false);
-            }}
-            onRemove={() => setRemoveImage(true)}
-            hint="Use a wide landscape photo, at least 1920 px across. Faces near the centre stay visible on phones."
+          <HeroImageField
+            value={image}
+            onChange={setImage}
+            hint="Upload a wide landscape photo, at least 1920 px across, or reuse one from the gallery. Faces near the centre stay visible on phones."
           />
           <TextInput
             label="Photo description"
@@ -108,11 +110,10 @@ export default function HeroSettingsPage() {
 
         <div className="admin-form__bar">
           <UploadStatus stage={stage} />
-          <button type="submit" className="btn btn--primary" disabled={busy}>
+          <button type="submit" className="btn btn--primary" disabled={busy || !ready}>
             {busy ? 'Saving…' : 'Save hero'}
           </button>
         </div>
       </form>
-    </>
   );
 }

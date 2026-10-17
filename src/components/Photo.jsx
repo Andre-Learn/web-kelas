@@ -21,6 +21,7 @@ export default function Photo({
   fallback = 'image',
   loading = 'lazy',
   sizes,
+  srcSet,
   className = '',
   fetchPriority,
 }) {
@@ -37,7 +38,8 @@ export default function Photo({
           alt={alt}
           width={width}
           height={height}
-          sizes={sizes}
+          srcSet={srcSet}
+          sizes={srcSet ? sizes : undefined}
           loading={loading}
           decoding="async"
           fetchpriority={fetchPriority}

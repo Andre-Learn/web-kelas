@@ -28,6 +28,9 @@ const fallback = (
   </div>
 );
 
+// Public pages suspend inside PublicLayout and admin pages inside AdminLayout, so the
+// navbar, footer, and dashboard frame stay on screen. This outer boundary only covers
+// loading the admin layout and login chunks themselves.
 export default function App() {
   return (
     <Suspense fallback={fallback}>

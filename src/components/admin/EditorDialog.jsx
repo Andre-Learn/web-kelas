@@ -19,7 +19,7 @@ export default function EditorDialog({ open, title, onClose, onSubmit, busy, sta
           <h2 id={titleId} className="editor__title">
             {title}
           </h2>
-          <DialogClose onClick={onClose} />
+          {busy ? null : <DialogClose onClick={onClose} />}
         </header>
         <div className="editor__body form">{children}</div>
         <footer className="editor__foot">

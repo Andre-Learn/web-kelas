@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { m, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import Icon from './Icon.jsx';
 import { useContent } from '../context/ContentContext.jsx';
+import { THUMB_SIZE } from '../lib/api.js';
 
 function CtaLink({ href, className, children }) {
   if (/^https?:\/\//.test(href)) {
@@ -25,8 +26,9 @@ const rise = (delay) => ({
 });
 
 export default function Hero() {
-  const { content } = useContent();
-  const { className, tagline, heroImage, heroAlt, ctaPrimary, ctaSecondary } = content.settings;
+  const { content, status } = useContent();
+  const { className, tagline, heroImage, heroImageThumb, heroAlt, ctaPrimary, ctaSecondary } = content.settings;
+  const loading = status === 'loading';
   const reduce = useReducedMotion();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 800], [0, reduce ? 0 : 80]);
@@ -36,7 +38,17 @@ export default function Hero() {
     <section className="hero" aria-labelledby="hero-title">
       <m.div className="hero__media" style={{ y, scale }}>
         {heroImage ? (
-          <img src={heroImage} alt={heroAlt || `${className} class photo`} fetchpriority="high" decoding="async" />
+          <img
+            src={heroImage}
+            // The thumbnail is a real smaller rendition of the same upload; the full file is 1920 px wide at most.
+            srcSet={heroImageThumb ? `${heroImageThumb} ${THUMB_SIZE}w, ${heroImage} 1920w` : undefined}
+            sizes={heroImageThumb ? '100vw' : undefined}
+            alt={heroAlt || `${className} class photo`}
+            fetchpriority="high"
+            decoding="async"
+          />
+        ) : loading ? (
+          <div className="hero__placeholder" aria-hidden="true" />
         ) : (
           <div className="hero__placeholder" role="img" aria-label="Class photo placeholder. An administrator can add the photo from the dashboard.">
             <span className="hero__placeholder-note">

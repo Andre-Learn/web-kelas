@@ -46,6 +46,13 @@ export function AuthProvider({ children }) {
     return () => data.subscription.unsubscribe();
   }, [resolveSession]);
 
+  const recheck = useCallback(async () => {
+    if (!isSupabaseConfigured) return;
+    setState((s) => ({ ...s, status: 'loading' }));
+    const { data } = await supabase.auth.getSession();
+    await resolveSession(data.session);
+  }, [resolveSession]);
+
   const signIn = useCallback(async (email, password) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message === 'Invalid login credentials' ? 'Email or password is incorrect.' : error.message);
@@ -64,8 +71,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ ...state, signIn, signOut, startLocalPreview }),
-    [state, signIn, signOut, startLocalPreview],
+    () => ({ ...state, signIn, signOut, startLocalPreview, recheck }),
+    [state, signIn, signOut, startLocalPreview, recheck],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

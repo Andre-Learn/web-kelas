@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import AdminPageHeader from '../../components/admin/AdminPageHeader.jsx';
-import { ImagePicker, TextInput, UploadStatus } from '../../components/FormControls.jsx';
+import { TextInput, UploadStatus } from '../../components/FormControls.jsx';
+import ContentGate from '../../components/admin/ContentGate.jsx';
+import HeroImageField, { EMPTY_HERO_IMAGE, heroImagePatch } from '../../components/admin/HeroImageField.jsx';
 import ThemeToggle from '../../components/ThemeToggle.jsx';
 import { ACCENT_OPTIONS } from '../../data/defaultContent.js';
 import useSettingsForm from '../../hooks/useSettingsForm.js';
@@ -8,11 +10,22 @@ import useDocumentTitle from '../../hooks/useDocumentTitle.js';
 
 export default function AppearancePage() {
   useDocumentTitle('Appearance');
-  const { settings, save, stage, busy } = useSettingsForm();
+  return (
+    <>
+      <AdminPageHeader title="Appearance" description="Site-wide identity and accent colour. Visitors still choose light or dark mode for themselves." />
+      <ContentGate what="appearance settings">
+        <AppearanceForm />
+      </ContentGate>
+    </>
+  );
+}
+
+function AppearanceForm() {
+  const { settings, save, stage, busy, ready } = useSettingsForm();
   const [accent, setAccent] = useState(settings.accent);
   const [className, setClassName] = useState(settings.className);
   const [tagline, setTagline] = useState(settings.tagline);
-  const [file, setFile] = useState(null);
+  const [image, setImage] = useState(EMPTY_HERO_IMAGE);
   const [error, setError] = useState('');
 
   const preview = (id) => {
@@ -33,16 +46,12 @@ export default function AppearancePage() {
       return;
     }
     setError('');
-    const ok = await save(
-      { accent, className: className.trim(), tagline: tagline.trim() },
-      { file, imageKey: 'heroImage', thumbKey: 'heroImageThumb', folder: 'hero', message: 'Appearance saved.' },
-    );
-    if (ok) setFile(null);
+    const { patch, upload } = heroImagePatch(image);
+    const ok = await save({ accent, className: className.trim(), tagline: tagline.trim(), ...patch }, { ...upload, message: 'Appearance saved.' });
+    if (ok) setImage(EMPTY_HERO_IMAGE);
   };
 
   return (
-    <>
-      <AdminPageHeader title="Appearance" description="Site-wide identity and accent colour. Visitors still choose light or dark mode for themselves." />
       <form className="admin-form" onSubmit={submit} noValidate>
         <section className="admin-panel form">
           <h2 className="admin-panel__title">Accent colour</h2>
@@ -72,7 +81,7 @@ export default function AppearancePage() {
           <h2 className="admin-panel__title">Identity</h2>
           <TextInput label="Class name" value={className} onChange={(e) => setClassName(e.target.value)} error={error} />
           <TextInput label="Tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} optional />
-          <ImagePicker label="Hero image" currentSrc={settings.heroImage} file={file} onFileChange={setFile} hint="Same image as Hero settings. Use a wide landscape photo." />
+          <HeroImageField value={image} onChange={setImage} allowRemove={false} hint="Same image as Hero settings. Upload a wide landscape photo or reuse one from the gallery." />
         </section>
 
         <div className="admin-form__bar">
@@ -82,11 +91,10 @@ export default function AppearancePage() {
               Reset accent
             </button>
           ) : null}
-          <button type="submit" className="btn btn--primary" disabled={busy}>
+          <button type="submit" className="btn btn--primary" disabled={busy || !ready}>
             {busy ? 'Saving…' : 'Save appearance'}
           </button>
         </div>
       </form>
-    </>
   );
 }

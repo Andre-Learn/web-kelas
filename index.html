@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="XI TJKT-1 — the digital home of our class: its people, its structure, and its memories." />
-    <meta name="theme-color" content="#0B0D12" />
+    <meta name="description" content="XI TJKT-1: the digital home of our class: its people, its structure, and its memories." />
+    <!-- Both variants let the browser pick before scripts run; the script below then pins the chosen theme. -->
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0D12" media="(prefers-color-scheme: dark)" />
     <title>XI TJKT-1</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -22,6 +24,16 @@
             ? saved
             : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
           document.documentElement.dataset.theme = theme;
+          var color = theme === 'dark' ? '#0B0D12' : '#F8FAFC';
+          var metas = document.querySelectorAll('meta[name="theme-color"]');
+          for (var i = 0; i < metas.length; i++) {
+            if (i === 0) {
+              metas[i].removeAttribute('media');
+              metas[i].setAttribute('content', color);
+            } else {
+              metas[i].parentNode.removeChild(metas[i]);
+            }
+          }
           var accent = localStorage.getItem('tjkt:accent');
           if (accent) document.documentElement.dataset.accent = accent;
         } catch (e) {

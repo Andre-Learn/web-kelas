@@ -35,7 +35,7 @@ export const defaultSettings = {
   about: {
     headline: 'A class that grows by staying connected.',
     intro:
-      'XI TJKT-1 is an eleventh-grade class in the TJKT program — Teknik Jaringan Komputer dan Telekomunikasi, or Computer Network and Telecommunication Engineering.',
+      'XI TJKT-1 is an eleventh-grade class in the TJKT program: Teknik Jaringan Komputer dan Telekomunikasi, or Computer Network and Telecommunication Engineering.',
     identity:
       'This website is our shared space: a place to meet the people in our class, see how the class is organised, and keep the moments we spend together.',
     community:
@@ -49,18 +49,19 @@ export const defaultSettings = {
   },
 };
 
-// Role slots only. Names stay empty until the class fills them in.
-export const defaultOfficers = [
-  { id: 'slot-teacher', name: '', role: 'Homeroom Teacher', tier: 'teacher', description: '', photo: '' },
-  { id: 'slot-president', name: '', role: 'Class President', tier: 'core', description: '', photo: '' },
-  { id: 'slot-vice', name: '', role: 'Vice President', tier: 'core', description: '', photo: '' },
-  { id: 'slot-secretary', name: '', role: 'Secretary', tier: 'officer', description: '', photo: '' },
-  { id: 'slot-treasurer', name: '', role: 'Treasurer', tier: 'officer', description: '', photo: '' },
+// Suggested roles an administrator can add in one step from Structure settings.
+// They are never shown publicly until they have been saved as real records.
+export const STARTER_ROLES = [
+  { name: '', role: 'Homeroom Teacher', tier: 'teacher', description: '', photo: '' },
+  { name: '', role: 'Class President', tier: 'core', description: '', photo: '' },
+  { name: '', role: 'Vice President', tier: 'core', description: '', photo: '' },
+  { name: '', role: 'Secretary', tier: 'officer', description: '', photo: '' },
+  { name: '', role: 'Treasurer', tier: 'officer', description: '', photo: '' },
 ];
 
 export const defaultContent = {
   settings: defaultSettings,
-  officers: defaultOfficers,
+  officers: [],
   members: [],
   gallery: [],
 };

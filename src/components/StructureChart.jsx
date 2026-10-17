@@ -1,9 +1,10 @@
 import { useMemo } from 'react';
 import ProfileCard from './ProfileCard.jsx';
+import { Link } from 'react-router-dom';
 import { RevealGroup, RevealItem } from './Reveal.jsx';
 
 /** Three-tier organisation: teacher, core officers, other officers. Empty tiers collapse. */
-export default function StructureChart({ officers, limit }) {
+export default function StructureChart({ officers, limit, moreHref }) {
   const tiers = useMemo(() => {
     const by = (tier) => officers.filter((o) => o.tier === tier);
     const officerTier = by('officer');
@@ -45,6 +46,14 @@ export default function StructureChart({ officers, limit }) {
             </RevealItem>
           ))}
         </RevealGroup>
+      ) : null}
+
+      {tiers.hidden && moreHref ? (
+        <p className="structure__more">
+          <Link to={moreHref} className="text-link">
+            {tiers.hidden} more {tiers.hidden === 1 ? 'officer' : 'officers'} on the full structure page
+          </Link>
+        </p>
       ) : null}
     </div>
   );
