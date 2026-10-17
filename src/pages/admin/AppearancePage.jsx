@@ -12,7 +12,7 @@ export default function AppearancePage() {
   useDocumentTitle('Appearance');
   return (
     <>
-      <AdminPageHeader title="Appearance" description="Site-wide identity and accent colour. Visitors still choose light or dark mode for themselves." />
+      <AdminPageHeader title="Appearance" description="Site-wide identity, accent colour and footer details. Teal is the brand colour; change it only if the class agrees. Visitors still choose light or dark mode for themselves." />
       <ContentGate what="appearance settings">
         <AppearanceForm />
       </ContentGate>
@@ -25,6 +25,9 @@ function AppearanceForm() {
   const [accent, setAccent] = useState(settings.accent);
   const [className, setClassName] = useState(settings.className);
   const [tagline, setTagline] = useState(settings.tagline);
+  const [school, setSchool] = useState(settings.school || '');
+  const [city, setCity] = useState(settings.city || '');
+  const [credits, setCredits] = useState(settings.credits || '');
   const [image, setImage] = useState(EMPTY_HERO_IMAGE);
   const [error, setError] = useState('');
 
@@ -47,7 +50,10 @@ function AppearanceForm() {
     }
     setError('');
     const { patch, upload } = heroImagePatch(image);
-    const ok = await save({ accent, className: className.trim(), tagline: tagline.trim(), ...patch }, { ...upload, message: 'Appearance saved.' });
+    const ok = await save(
+      { accent, className: className.trim(), tagline: tagline.trim(), school: school.trim(), city: city.trim(), credits: credits.trim(), ...patch },
+      { ...upload, message: 'Appearance saved.' },
+    );
     if (ok) setImage(EMPTY_HERO_IMAGE);
   };
 
@@ -82,6 +88,21 @@ function AppearanceForm() {
           <TextInput label="Class name" value={className} onChange={(e) => setClassName(e.target.value)} error={error} />
           <TextInput label="Tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} optional />
           <HeroImageField value={image} onChange={setImage} allowRemove={false} hint="Same image as Hero settings. Upload a wide landscape photo or reuse one from the gallery." />
+        </section>
+
+        <section className="admin-panel form">
+          <h2 className="admin-panel__title">Footer</h2>
+          <div className="form__row">
+            <TextInput label="School name" value={school} onChange={(e) => setSchool(e.target.value)} optional />
+            <TextInput label="City" value={city} onChange={(e) => setCity(e.target.value)} optional />
+          </div>
+          <TextInput
+            label="Built by"
+            value={credits}
+            onChange={(e) => setCredits(e.target.value)}
+            optional
+            hint="Names of the students who built this site, separated by commas. Shown as “Made by XI TJKT-1”."
+          />
         </section>
 
         <div className="admin-form__bar">

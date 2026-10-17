@@ -2,7 +2,7 @@ import PageHeader from '../components/PageHeader.jsx';
 import StructureChart from '../components/StructureChart.jsx';
 import useDocumentTitle from '../hooks/useDocumentTitle.js';
 import { useContent } from '../context/ContentContext.jsx';
-import { EmptyState, SkeletonGrid } from '../components/States.jsx';
+import { EmptyState, StructureSkeleton } from '../components/States.jsx';
 
 export default function StructurePage() {
   useDocumentTitle('Structure');
@@ -17,7 +17,7 @@ export default function StructurePage() {
       <section className="section section--tight" aria-label="Class organisation">
         <div className="container">
           {status === 'loading' ? (
-            <SkeletonGrid count={3} className="structure-skeleton" ratio="3 / 1" />
+            <StructureSkeleton />
           ) : content.officers.length ? (
             <StructureChart officers={content.officers} />
           ) : (

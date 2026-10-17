@@ -3,7 +3,13 @@ import ProfileCard from './ProfileCard.jsx';
 import { Link } from 'react-router-dom';
 import { RevealGroup, RevealItem } from './Reveal.jsx';
 
-/** Three-tier organisation: teacher, core officers, other officers. Empty tiers collapse. */
+const TIER_LABELS = { teacher: 'Homeroom', core: 'Core', officer: 'Officers' };
+
+/**
+ * Three-tier organisation drawn as a small network: teacher at the top, core officers below,
+ * officers as leaf nodes. Lines are CSS borders. On narrow screens it becomes a tree view with
+ * a left connector. Empty tiers collapse.
+ */
 export default function StructureChart({ officers, limit, moreHref }) {
   const tiers = useMemo(() => {
     const by = (tier) => officers.filter((o) => o.tier === tier);
@@ -16,37 +22,28 @@ export default function StructureChart({ officers, limit, moreHref }) {
     };
   }, [officers, limit]);
 
+  const rows = [
+    { id: 'teacher', people: tiers.teacher, size: 'lg' },
+    { id: 'core', people: tiers.core, size: 'md' },
+    { id: 'officer', people: tiers.officer, size: 'sm' },
+  ].filter((row) => row.people.length);
+
   return (
-    <div className="structure">
-      {tiers.teacher.length ? (
-        <RevealGroup className="structure__tier structure__tier--teacher">
-          {tiers.teacher.map((p) => (
-            <RevealItem key={p.id}>
-              <ProfileCard person={p} size="lg" />
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      ) : null}
-
-      {tiers.core.length ? (
-        <RevealGroup className="structure__tier structure__tier--core">
-          {tiers.core.map((p) => (
-            <RevealItem key={p.id}>
-              <ProfileCard person={p} />
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      ) : null}
-
-      {tiers.officer.length ? (
-        <RevealGroup className="structure__tier structure__tier--officer">
-          {tiers.officer.map((p) => (
-            <RevealItem key={p.id}>
-              <ProfileCard person={p} size="sm" />
-            </RevealItem>
-          ))}
-        </RevealGroup>
-      ) : null}
+    <>
+      <div className="topology">
+        {rows.map((row, i) => (
+          <div key={row.id} className={`topology__tier topology__tier--${row.id} ${i === 0 ? 'topology__tier--root' : ''}`}>
+            <p className="topology__label mono">{TIER_LABELS[row.id]}</p>
+            <RevealGroup as="ul" role="list" className="topology__nodes">
+              {row.people.map((p) => (
+                <RevealItem as="li" key={p.id} className="topology__node">
+                  <ProfileCard person={p} size={row.size} />
+                </RevealItem>
+              ))}
+            </RevealGroup>
+          </div>
+        ))}
+      </div>
 
       {tiers.hidden && moreHref ? (
         <p className="structure__more">
@@ -55,6 +52,6 @@ export default function StructureChart({ officers, limit, moreHref }) {
           </Link>
         </p>
       ) : null}
-    </div>
+    </>
   );
 }

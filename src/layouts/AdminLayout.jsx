@@ -9,6 +9,7 @@ import { ToastProvider } from '../components/Toast.jsx';
 import { useAuth } from '../context/AuthContext.jsx';
 import { useContent } from '../context/ContentContext.jsx';
 import { backend } from '../lib/api.js';
+import BrandMark from '../components/BrandMark.jsx';
 
 function NotAuthorised({ email, onSignOut }) {
   return (
@@ -66,7 +67,7 @@ export default function AdminLayout() {
         <aside className="admin__aside">
           <Link to="/admin" className="admin__brand">
             <span className="navbar__mark" aria-hidden="true">
-              XI
+              <BrandMark />
             </span>
             <span>
               {content.settings.className}

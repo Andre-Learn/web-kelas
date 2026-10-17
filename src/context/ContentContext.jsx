@@ -28,7 +28,7 @@ export function ContentProvider({ children }) {
 
   // Accent is a site-wide setting chosen by administrators.
   useEffect(() => {
-    const accent = content.settings.accent || 'violet';
+    const accent = content.settings.accent || 'teal';
     document.documentElement.dataset.accent = accent;
     try {
       localStorage.setItem('tjkt:accent', accent);

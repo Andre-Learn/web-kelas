@@ -1,0 +1,164 @@
+XI TJKT-1 - Design review and redesign ideas
+=============================================
+This review is based on src/styles/*.css, the home sections, Navbar, Hero,
+Footer and PRD.md. No source files were changed.
+
+
+1. WHAT WORKS (keep it)
+-----------------------
+- The accessibility base is strong. Contrast is measured and written down in
+  tokens.css, every tap target is 44px or more, focus rings are visible,
+  reduced motion is respected, and the mobile menu has a focus trap and inert.
+- The token system is clean: a 4px spacing scale, fluid type with clamp(),
+  and semantic colors with light and dark versions.
+- The full-bleed hero photo with a scrim, and a navbar that turns into glass
+  on scroll, is the right lead for a class site. The photo is the point.
+- Loading, empty and error states exist for every section.
+
+
+2. WHAT IS WEAK
+---------------
+2.1 It looks like a SaaS template, not a class.
+    Plus Jakarta Sans, a violet accent, pill buttons, "eyebrow + big title +
+    muted description" on every section, soft shadows, cards that lift on
+    hover. All of it is correct, but swap the name and the site could belong
+    to any startup. Nothing in it says students, TJKT, or 2024-2026.
+
+2.2 Every home section uses the same rhythm.
+    About, Structure, Members and Gallery all use SectionHeading, then a grid,
+    then a centered "View all" button, on alternating bg / bg-alt bands. On a
+    phone the page becomes one long scroll with no change of pace.
+
+2.3 The violet accent has no meaning.
+    It is there because the PRD named it. The appearance page offers teal,
+    rose and amber too, so the brand has no fixed color.
+
+2.4 The "XI" mark is a placeholder.
+    It is a dark square with two letters, and it is the only brand element.
+
+2.5 The about facts (Grade XI / Program TJKT / Class 1) repeat the class
+    name in three cells. They take a full row and tell the visitor nothing new.
+
+2.6 Gallery captions only appear on hover for pointer devices. On touch they
+    are always visible, which is fine, but on desktop the content is hidden
+    behind an interaction.
+
+
+3. REDESIGN DIRECTION: "class yearbook with a network-engineer accent"
+------------------------------------------------------------------------
+The idea: keep the calm, accessible layout, and give it an identity from two
+real sources: (a) a printed school yearbook, (b) the TJKT program itself
+(networks, cables, terminals, IP addresses). Use it in small doses. It
+should not turn into a hacker theme.
+
+3.1 Typography
+    - Headings: keep a grotesk, but a more characterful one, e.g.
+      Space Grotesk (600/700). It reads technical without being cold.
+    - Body: Inter or keep Plus Jakarta Sans at 400/500.
+    - Labels, numbers, dates, member numbers, roles: JetBrains Mono 500,
+      uppercase off, normal tracking. This one change carries most of
+      the "TJKT" feel.
+      e.g. member number "01" -> "192.168.11.01"-style is too cute;
+           a simple mono "No. 01" is enough.
+    - Load only the weights used (Space Grotesk 600,700 / Mono 500).
+
+3.2 Color
+    - One fixed brand accent instead of a picker on the public site.
+      Suggestion: a cable/LED green or a signal blue, e.g.
+        light: accent #0f766e (teal-700, text 5.4:1 on white)
+        dark:  accent #2dd4bf
+      Teal already exists in tokens.css and already passes contrast, so this
+      is a default change, not new work.
+    - Neutral base: move from blue-gray (#172033) to near-neutral zinc
+      (#18181b / #fafafa). The photos then carry the color.
+    - Keep the accent picker in admin only if the class really wants it;
+      otherwise drop it from the Appearance page to protect the brand.
+
+3.3 Logo / mark
+    - Replace the "XI" square with a simple SVG mark: three nodes joined
+      by lines (a tiny network topology) next to "XI TJKT-1" set in mono.
+      Use it in the navbar, footer, favicon and the og:image.
+
+3.4 Hero
+    - Keep the full-bleed photo.
+    - Add a small mono line above the title with real data:
+        "TJKT · Kelas XI · 2025/2026 · 36 siswa"
+      (count comes from content.members.length; year from settings).
+    - Drop the "Teknik Jaringan Komputer dan Telekomunikasi" kicker into
+      the about section instead; in the hero it is long and wraps badly
+      at 360px.
+    - One primary CTA ("Meet the class") plus a text link to the gallery,
+      instead of two equal-weight pill buttons.
+
+3.5 About section: replace the 3 fact cells
+    - Swap "Grade / Program / Class" for numbers that mean something:
+        members | photos in the gallery | officers | year founded
+      All are derivable from existing content, so there is no new admin
+      field except the year.
+    - Set the numbers in mono, large, with a thin top rule (yearbook style).
+
+3.6 Structure section: show it as a network, not a card list
+    - Draw the hierarchy as a topology: homeroom teacher at the top
+      ("core router"), core officers below, officers as leaf nodes, joined by
+      1px lines (SVG or CSS borders). On mobile it collapses to a vertical
+      list with a left connector line, like a tree view.
+    - Each node: round photo, role in mono, name in the heading font.
+    - This is the one place where the TJKT theme can be obvious, and it
+      is still readable as a normal org chart.
+
+3.7 Members section: yearbook grid
+    - Portrait 3:4 photos, square corners or a small radius (4-8px),
+      name below, mono "No. 01" above the name. No lift on hover; on hover,
+      show a 2px accent outline and a slight photo zoom.
+    - On home, show a horizontal strip of 8-10 faces with scroll-snap and
+      a "See all 36" end card, instead of a second full grid. This breaks
+      the repeated grid rhythm (point 2.2).
+    - On /members keep the full grid + search.
+
+3.8 Gallery section: change the pace
+    - On home, use one large featured photo + 4 small ones (bento-style
+      2x2 + 1 big), not a masonry preview. That gives the home page
+      one visually loud moment near the end.
+    - Show captions on desktop too: a one-line caption under each tile,
+      not a hover overlay (fixes 2.6).
+    - Optional: show the photo date as a mono "timestamp" chip.
+
+3.9 Section rhythm on home
+    Hero (photo, dark) -> About (light, text + numbers) -> Structure
+    (bg-alt, diagram) -> Members (light, horizontal strip) -> Gallery
+    (dark band, bento) -> Footer (dark). Alternating text-heavy and
+    image-heavy blocks, and one dark band before the footer.
+
+3.10 Small details that add identity
+    - Footer: add "Made by XI TJKT-1" with the student names who built it,
+      and the school name + city.
+    - 404 page: "404 - host unreachable" in mono, with a link home.
+    - Section eyebrows can carry a mono index: "01 / About", "02 / Structure".
+    - Skeletons: keep them, but match the new shapes (round for structure
+      nodes, 3:4 for members).
+
+
+4. WHAT NOT TO CHANGE
+---------------------
+- Contrast values, 44px targets, focus styles, reduced-motion handling.
+- Data flow, admin dashboard, Supabase layer.
+- Page routes and the PRD home section order.
+- Do not add a matrix/terminal background, neon glow, gradient text or a
+  typing animation. They would undo the readability that is there now.
+
+
+5. SUGGESTED ORDER OF WORK (smallest first)
+-------------------------------------------
+ 1. Fonts: add Space Grotesk + JetBrains Mono, map them to --font-display
+    and --font-mono in tokens.css.                          (tokens.css, index.html)
+ 2. Default accent -> teal, neutral base -> zinc.          (tokens.css, defaultContent.js)
+ 3. New SVG mark in navbar/footer/favicon.                 (Navbar.jsx, Footer.jsx, public/)
+ 4. Hero meta line + single primary CTA.                   (Hero.jsx, public.css)
+ 5. About numbers from real data.                          (AboutSection.jsx)
+ 6. Members strip on home.                                 (MembersSection.jsx)
+ 7. Gallery bento on home + visible captions.              (GallerySection.jsx, GalleryGrid.jsx)
+ 8. Structure topology view.                               (StructureChart.jsx) - biggest job
+ 9. 404 copy, section index eyebrows, footer credits.
+
+After each step: check 360px, 768px, 1024px, 1440px in light and dark mode,
+and re-check contrast for any new color pair.

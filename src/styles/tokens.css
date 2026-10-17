@@ -1,13 +1,16 @@
-/* Design tokens. Colors follow PRD 4.2 with two measured deviations (WCAG 2.2 AA):
- *  - Light --text-muted is #5b6779, not #64748B. #64748B is 4.23:1 on --bg-alt (#EEF2F7),
- *    below 4.5:1 for body text. #5b6779 is 5.10:1 on --bg-alt and 5.74:1 on white.
- *  - Primary buttons fill with --accent-strong (#7C3AED), not --accent (#8B5CF6). White text on
- *    #8B5CF6 is 4.23:1, below 4.5:1. On #7C3AED it is 5.70:1. #8B5CF6 stays the highlight accent.
+/* Design tokens (WCAG 2.2 AA, ratios measured):
+ *  - Neutral base is zinc so the photos carry the colour. Light --text-muted #52525b is 7.03:1 on
+ *    --bg-alt (#f4f4f5) and 7.73:1 on white; dark --text-muted #a1a1aa is 6.41:1 on --surface-2.
+ *  - The brand accent is teal (redesign.txt 3.2). Light --accent #0d9488 is 3.41:1 on --bg-alt (non-text,
+ *    3:1 needed); --accent-strong #0f766e is 4.98:1 on --bg-alt and carries white text at 5.47:1.
  * Light-mode --accent is used for non-text marks (underlines, focus borders, spinners) and must be
- * 3:1 or more on every background; --accent-strong is used for text and must be 4.5:1 or more. */
+ * 3:1 or more on every background; --accent-strong is used for text and must be 4.5:1 or more.
+ * Accent rules for dark mode also match nested [data-theme='dark'] bands (gallery band, footer). */
 
 :root {
   --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Space Grotesk', var(--font-sans);
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* 4px spacing scale */
   --space-1: 4px;
@@ -24,6 +27,7 @@
   --space-24: 96px;
   --space-30: 120px;
 
+  --radius-xs: 6px; /* yearbook photos: square-ish corners */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
@@ -53,46 +57,46 @@
   --dur-slow: 420ms;
 
   color-scheme: light;
-  --bg: #f8fafc;
-  --bg-alt: #eef2f7;
+  --bg: #fafafa;
+  --bg-alt: #f4f4f5;
   --surface: #ffffff;
-  --surface-2: #f3f6fa;
-  --text: #172033;
-  --text-muted: #5b6779;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --glass: rgba(248, 250, 252, 0.72);
-  --glass-border: rgba(23, 32, 51, 0.08);
-  --shadow-sm: 0 1px 2px rgba(23, 32, 51, 0.06);
-  --shadow-md: 0 1px 2px rgba(23, 32, 51, 0.04), 0 8px 24px -8px rgba(23, 32, 51, 0.12);
-  --shadow-lg: 0 2px 4px rgba(23, 32, 51, 0.04), 0 24px 48px -16px rgba(23, 32, 51, 0.2);
+  --surface-2: #f4f4f5;
+  --text: #18181b;
+  --text-muted: #52525b;
+  --border: #e4e4e7;
+  --border-strong: #d4d4d8;
+  --glass: rgba(250, 250, 250, 0.72);
+  --glass-border: rgba(24, 24, 27, 0.08);
+  --shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.06);
+  --shadow-md: 0 1px 2px rgba(24, 24, 27, 0.04), 0 8px 24px -8px rgba(24, 24, 27, 0.12);
+  --shadow-lg: 0 2px 4px rgba(24, 24, 27, 0.04), 0 24px 48px -16px rgba(24, 24, 27, 0.2);
   --danger: #b91c1c;
   --danger-bg: #fef2f2;
   --success: #15803d;
   --success-bg: #f0fdf4;
   --warning: #92400e;
   --warning-bg: #fffbeb;
-  --placeholder-a: #e4e9f0;
-  --placeholder-b: #d5dce6;
+  --placeholder-a: #e4e4e7;
+  --placeholder-b: #d4d4d8;
 
-  --accent: #8b5cf6;
-  --accent-strong: #7c3aed;
+  --accent: #0d9488;
+  --accent-strong: #0f766e;
   --on-accent: #ffffff;
-  --accent-soft: rgba(139, 92, 246, 0.1);
-  --focus: #7c3aed;
+  --accent-soft: rgba(20, 184, 166, 0.1);
+  --focus: #0f766e;
 }
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --bg: #0b0d12;
-  --bg-alt: #11151d;
-  --surface: #151a23;
-  --surface-2: #1b212c;
-  --text: #f8fafc;
+  --bg: #09090b;
+  --bg-alt: #111113;
+  --surface: #18181b;
+  --surface-2: #1f1f23;
+  --text: #fafafa;
   --text-muted: #a1a1aa;
-  --border: #272d39;
-  --border-strong: #3a4252;
-  --glass: rgba(11, 13, 18, 0.68);
+  --border: #27272a;
+  --border-strong: #3f3f46;
+  --glass: rgba(9, 9, 11, 0.68);
   --glass-border: rgba(255, 255, 255, 0.08);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px -8px rgba(0, 0, 0, 0.5);
@@ -103,29 +107,29 @@
   --success-bg: rgba(74, 222, 128, 0.1);
   --warning: #fbbf24;
   --warning-bg: rgba(251, 191, 36, 0.1);
-  --placeholder-a: #1b212c;
-  --placeholder-b: #232a37;
+  --placeholder-a: #1f1f23;
+  --placeholder-b: #27272a;
 
-  --accent: #a78bfa;
-  --accent-strong: #a78bfa;
-  --on-accent: #0b0d12;
-  --accent-soft: rgba(167, 139, 250, 0.12);
-  --focus: #c4b5fd;
-}
-
-/* Administrator-selectable accents (Appearance settings). */
-/* Teal: #14B8A6 is 2.21:1 on --bg-alt, so light mode uses teal-600 (3.33:1 minimum). */
-[data-accent='teal'] {
-  --accent: #0d9488;
-  --accent-strong: #0f766e;
-  --accent-soft: rgba(20, 184, 166, 0.1);
-  --focus: #0f766e;
-}
-[data-theme='dark'][data-accent='teal'] {
   --accent: #2dd4bf;
   --accent-strong: #2dd4bf;
+  --on-accent: #09090b;
   --accent-soft: rgba(45, 212, 191, 0.12);
   --focus: #5eead4;
+}
+
+/* Administrator-selectable accents (Appearance settings). Teal is the default above. */
+[data-accent='violet'] {
+  --accent: #8b5cf6;
+  --accent-strong: #7c3aed;
+  --accent-soft: rgba(139, 92, 246, 0.1);
+  --focus: #7c3aed;
+}
+[data-theme='dark'][data-accent='violet'],
+[data-accent='violet'] [data-theme='dark'] {
+  --accent: #a78bfa;
+  --accent-strong: #a78bfa;
+  --accent-soft: rgba(167, 139, 250, 0.12);
+  --focus: #c4b5fd;
 }
 [data-accent='rose'] {
   --accent: #e11d48;
@@ -133,21 +137,22 @@
   --accent-soft: rgba(225, 29, 72, 0.08);
   --focus: #be123c;
 }
-[data-theme='dark'][data-accent='rose'] {
+[data-theme='dark'][data-accent='rose'],
+[data-accent='rose'] [data-theme='dark'] {
   --accent: #fb7185;
   --accent-strong: #fb7185;
   --accent-soft: rgba(251, 113, 133, 0.12);
   --focus: #fda4af;
 }
-/* Amber: #D97706 is 2.83:1 on --bg-alt and #B45309 text is 4.47:1 there, so both step darker.
- * --accent #B45309 is 4.47:1 (non-text, 3:1 needed), --accent-strong #A1460A is 5.50:1 minimum. */
+/* Amber: --accent #B45309 is 4.57:1 on --bg-alt (non-text, 3:1 needed), --accent-strong #A1460A is 5.63:1 minimum. */
 [data-accent='amber'] {
   --accent: #b45309;
   --accent-strong: #a1460a;
   --accent-soft: rgba(180, 83, 9, 0.1);
   --focus: #a1460a;
 }
-[data-theme='dark'][data-accent='amber'] {
+[data-theme='dark'][data-accent='amber'],
+[data-accent='amber'] [data-theme='dark'] {
   --accent: #fbbf24;
   --accent-strong: #fbbf24;
   --accent-soft: rgba(251, 191, 36, 0.12);

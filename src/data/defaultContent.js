@@ -3,8 +3,8 @@
 // names, photos, and memories must come from the class, not from this file.
 
 export const ACCENT_OPTIONS = [
+  { id: 'teal', label: 'Teal (brand)' },
   { id: 'violet', label: 'Violet' },
-  { id: 'teal', label: 'Teal' },
   { id: 'rose', label: 'Rose' },
   { id: 'amber', label: 'Amber' },
 ];
@@ -31,7 +31,11 @@ export const defaultSettings = {
   heroAlt: '',
   ctaPrimary: { label: 'Meet Our Class', href: '/members' },
   ctaSecondary: { label: 'Explore Memories', href: '/gallery' },
-  accent: 'violet',
+  accent: 'teal',
+  // Footer details. Left empty until the class fills them in; empty lines are hidden.
+  school: '',
+  city: '',
+  credits: '',
   about: {
     headline: 'A class that grows by staying connected.',
     intro:
@@ -41,6 +45,8 @@ export const defaultSettings = {
     community:
       'Names and photos are published only with permission. If something here should be corrected or removed, ask a class administrator.',
     story: '',
+    // Year the class started, e.g. "2024". Shown with the counts on the homepage when set.
+    founded: '',
     facts: [
       { label: 'Grade', value: 'XI' },
       { label: 'Program', value: 'TJKT' },

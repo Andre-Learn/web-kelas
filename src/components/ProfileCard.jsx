@@ -1,6 +1,6 @@
 import Photo from './Photo.jsx';
 
-/** Officer card for the class structure. Unfilled role slots are labelled as such. */
+/** Structure node: round photo, role in mono, name in the heading font. Unfilled role slots are labelled as such. */
 export default function ProfileCard({ person, size = 'md' }) {
   const hasName = Boolean(person.name?.trim());
   return (
@@ -16,7 +16,7 @@ export default function ProfileCard({ person, size = 'md' }) {
         className="profile-card__photo"
       />
       <div className="profile-card__body">
-        <p className="profile-card__role">{person.role}</p>
+        <p className="profile-card__role mono">{person.role}</p>
         <h3 className={`profile-card__name ${hasName ? '' : 'profile-card__name--empty'}`}>
           {hasName ? person.name : 'Not yet announced'}
         </h3>

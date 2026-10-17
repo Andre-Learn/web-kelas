@@ -41,11 +41,31 @@ export function ErrorState({ title = 'Something went wrong', children, onRetry }
   );
 }
 
-export function SkeletonGrid({ count = 8, className = 'member-grid', ratio = '4 / 5' }) {
+export function SkeletonGrid({ count = 8, className = 'member-grid', ratio = '3 / 4' }) {
   return (
     <div className={className} aria-hidden="true">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="skeleton" style={{ aspectRatio: ratio }} />
+      ))}
+    </div>
+  );
+}
+
+/** Matches the topology layout: one root node, then two rows of round nodes. */
+export function StructureSkeleton() {
+  return (
+    <div className="topology topology--skeleton" aria-hidden="true">
+      {[1, 2, 3].map((n, row) => (
+        <div key={row} className="topology__tier">
+          <div className="topology__nodes">
+            {Array.from({ length: n }, (_, i) => (
+              <div key={i} className="topology__node skeleton-node">
+                <span className="skeleton skeleton-node__photo" />
+                <span className="skeleton skeleton-node__line" />
+              </div>
+            ))}
+          </div>
+        </div>
       ))}
     </div>
   );

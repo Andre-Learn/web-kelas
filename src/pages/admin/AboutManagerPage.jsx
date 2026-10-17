@@ -29,6 +29,7 @@ function AboutForm() {
   const { settings, save, busy, ready } = useSettingsForm();
   const [about, setAbout] = useState(() => structuredClone(settings.about));
   const [error, setError] = useState('');
+  const [foundedError, setFoundedError] = useState('');
 
   const set = (key) => (e) => setAbout((a) => ({ ...a, [key]: e.target.value }));
   const setFact = (i, key) => (e) =>
@@ -40,8 +41,14 @@ function AboutForm() {
       setError('Write a short introduction.');
       return;
     }
+    const founded = (about.founded || '').trim();
+    if (founded && !/^(19|20)\d{2}$/.test(founded)) {
+      setFoundedError('Enter a four-digit year, for example 2024.');
+      return;
+    }
     setError('');
-    await save({ about: { ...about, facts: about.facts.filter((f) => f.label.trim() && f.value.trim()) } }, { message: 'About section updated.' });
+    setFoundedError('');
+    await save({ about: { ...about, founded, facts: about.facts.filter((f) => f.label.trim() && f.value.trim()) } }, { message: 'About section updated.' });
   };
 
   const story = storyParagraphs(about.story);
@@ -56,6 +63,16 @@ function AboutForm() {
             <TextArea label="Introduction" rows={3} value={about.intro} onChange={set('intro')} error={error} />
             <TextArea label="Identity and background" rows={3} value={about.identity} onChange={set('identity')} />
             <TextArea label="Community statement" rows={3} value={about.community} onChange={set('community')} />
+            <TextInput
+              label="Year the class started"
+              optional
+              inputMode="numeric"
+              maxLength={4}
+              value={about.founded || ''}
+              onChange={set('founded')}
+              error={foundedError}
+              hint={foundedError ? undefined : 'Shown on the homepage next to the member, photo and officer counts.'}
+            />
             <TextArea
               label="Our story"
               optional
@@ -68,7 +85,7 @@ function AboutForm() {
 
           <section className="admin-panel form">
             <h2 className="admin-panel__title">Class facts</h2>
-            <p className="field__hint">Only add facts you can confirm. Empty rows are not shown.</p>
+            <p className="field__hint">Shown on the About page. Only add facts you can confirm. Empty rows are not shown.</p>
             {about.facts.map((fact, i) => (
               <div className="form__row form__row--fact" key={i}>
                 <TextInput label="Label" value={fact.label} onChange={setFact(i, 'label')} />
@@ -110,16 +127,6 @@ function AboutForm() {
             <h3 className="preview__headline">{about.headline || <span className="muted">No headline</span>}</h3>
             <p className="preview__lead">{about.intro || <span className="muted">Introduction is required</span>}</p>
             {about.identity ? <p className="muted">{about.identity}</p> : null}
-            {facts.length ? (
-              <dl className="preview__facts">
-                {facts.map((f, i) => (
-                  <div key={`${f.label}-${i}`}>
-                    <dt>{f.label}</dt>
-                    <dd>{f.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
           </div>
 
           <div className="preview__block">
@@ -136,6 +143,16 @@ function AboutForm() {
             )}
             <h4 className="preview__subhead">Our community</h4>
             <p className="preview__text">{about.community || <span className="muted">Empty</span>}</p>
+            {facts.length ? (
+              <dl className="preview__facts">
+                {facts.map((f, i) => (
+                  <div key={`${f.label}-${i}`}>
+                    <dt>{f.label}</dt>
+                    <dd>{f.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
           </div>
         </aside>
       </div>

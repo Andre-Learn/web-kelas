@@ -5,6 +5,7 @@ import Icon from './Icon.jsx';
 import ThemeToggle from './ThemeToggle.jsx';
 import { PUBLIC_ROUTES } from '../data/defaultContent.js';
 import { useContent } from '../context/ContentContext.jsx';
+import BrandMark from './BrandMark.jsx';
 
 function useScrolled(threshold = 24) {
   const [scrolled, setScrolled] = useState(false);
@@ -82,7 +83,7 @@ export default function Navbar() {
       <div className="container navbar__inner">
         <Link to="/" className="navbar__brand" aria-label={`${content.settings.className}, home`}>
           <span className="navbar__mark" aria-hidden="true">
-            XI
+            <BrandMark />
           </span>
           <span className="navbar__name">{content.settings.className}</span>
         </Link>

@@ -6,6 +6,7 @@ import { TextInput } from '../../components/FormControls.jsx';
 import ThemeToggle from '../../components/ThemeToggle.jsx';
 import Icon from '../../components/Icon.jsx';
 import useDocumentTitle from '../../hooks/useDocumentTitle.js';
+import BrandMark from '../../components/BrandMark.jsx';
 
 export default function LoginPage() {
   useDocumentTitle('Administrator sign in');
@@ -49,7 +50,7 @@ export default function LoginPage() {
       </div>
       <main className="login__card">
         <span className="navbar__mark" aria-hidden="true">
-          XI
+          <BrandMark />
         </span>
         <h1 className="login__title">Administrator sign in</h1>
         <p className="login__desc">For class administrators only. Accounts are created by an existing administrator.</p>

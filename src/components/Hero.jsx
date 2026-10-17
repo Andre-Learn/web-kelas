@@ -19,6 +19,12 @@ function CtaLink({ href, className, children }) {
   );
 }
 
+// Indonesian school years start in July.
+function schoolYear(now = new Date()) {
+  const y = now.getFullYear();
+  return now.getMonth() >= 6 ? `${y}/${y + 1}` : `${y - 1}/${y}`;
+}
+
 const rise = (delay) => ({
   initial: { opacity: 0, y: 18 },
   animate: { opacity: 1, y: 0 },
@@ -29,6 +35,8 @@ export default function Hero() {
   const { content, status } = useContent();
   const { className, tagline, heroImage, heroImageThumb, heroAlt, ctaPrimary, ctaSecondary } = content.settings;
   const loading = status === 'loading';
+  const count = content.members.length;
+  const meta = ['TJKT', 'Grade XI', schoolYear(), !loading && count ? `${count} ${count === 1 ? 'student' : 'students'}` : null].filter(Boolean);
   const reduce = useReducedMotion();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 800], [0, reduce ? 0 : 80]);
@@ -61,8 +69,13 @@ export default function Hero() {
       <div className="hero__scrim" aria-hidden="true" />
 
       <div className="container hero__content">
-        <m.p className="hero__kicker" {...rise(0.05)}>
-          Teknik Jaringan Komputer dan Telekomunikasi
+        <m.p className="hero__meta" {...rise(0.05)}>
+          {meta.map((item, i) => (
+            <span key={item}>
+              {i ? <span aria-hidden="true"> · </span> : null}
+              {item}
+            </span>
+          ))}
         </m.p>
         <m.h1 id="hero-title" className="hero__title" {...rise(0.12)}>
           {className}
@@ -75,7 +88,7 @@ export default function Hero() {
             {ctaPrimary.label}
             <Icon name="arrowRight" size={18} />
           </CtaLink>
-          <CtaLink href={ctaSecondary.href} className="btn btn--glass-photo">
+          <CtaLink href={ctaSecondary.href} className="hero__link">
             {ctaSecondary.label}
           </CtaLink>
         </m.div>

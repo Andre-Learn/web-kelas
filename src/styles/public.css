@@ -78,20 +78,30 @@
 .navbar__mark {
   display: inline-grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  background: var(--text);
-  color: var(--bg);
-  font-size: 0.8125rem;
-  font-weight: 800;
-  letter-spacing: 0;
+  width: 32px;
+  height: 32px;
+  color: currentColor;
   flex-shrink: 0;
 }
 
-.navbar--over-photo .navbar__mark {
-  background: #f8fafc;
-  color: #0b0d12;
+.navbar__mark svg {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-mark__core {
+  fill: var(--accent);
+}
+
+/* Over the photo the light-theme teal is too dark to read as a mark. */
+.navbar--over-photo .brand-mark__core {
+  fill: #2dd4bf;
+}
+
+.navbar__name {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .navbar__nav {
@@ -356,19 +366,23 @@ main:focus {
   padding-bottom: clamp(88px, 14vh, 140px);
 }
 
-.hero__kicker {
+.hero__meta {
   margin-bottom: var(--space-4);
-  max-width: 34ch;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: rgba(248, 250, 252, 0.78);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: rgba(250, 250, 250, 0.86);
+}
+
+/* Each item stays whole; lines break only at the separators. */
+.hero__meta > span {
+  white-space: nowrap;
 }
 
 .hero__title {
   font-size: var(--text-hero);
-  font-weight: 800;
+  font-weight: 700;
   line-height: 0.95;
   letter-spacing: -0.035em;
 }
@@ -385,8 +399,30 @@ main:focus {
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
   margin-top: var(--space-8);
+}
+
+.hero__link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: #fafafa;
+  text-decoration: underline;
+  text-decoration-color: rgba(250, 250, 250, 0.45);
+  text-underline-offset: 6px;
+  transition: text-decoration-color var(--dur-fast) ease;
+}
+
+.hero__link:hover {
+  text-decoration-color: #fafafa;
+}
+
+.hero__link:focus-visible {
+  outline-color: #fafafa;
 }
 
 .hero__scroll {
@@ -441,11 +477,6 @@ main:focus {
   }
 }
 
-@media (max-width: 380px) {
-  .hero__actions .btn {
-    flex: 1 1 100%;
-  }
-}
 
 /* ---------- section heading ---------- */
 
@@ -511,35 +542,40 @@ main:focus {
   color: var(--text);
 }
 
+.about__program {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+/* Yearbook-style numbers: a thin rule on top, the figure in mono below the label. */
 .about__facts {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  border-top: 1px solid var(--border);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-6) var(--space-5);
 }
 
 .about__fact {
-  padding: var(--space-5) 0 0;
-}
-
-.about__fact + .about__fact {
-  padding-left: var(--space-5);
-  border-left: 1px solid var(--border);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--text);
 }
 
 .about__fact dt {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--text-muted);
 }
 
 .about__fact dd {
   margin-top: var(--space-1);
-  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 1.5rem + 1.8vw, 3rem);
   line-height: 1.1;
+}
+
+@media (min-width: 640px) {
+  .about__facts {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 900px) {
@@ -553,39 +589,67 @@ main:focus {
   }
 }
 
-/* ---------- structure ---------- */
+/* ---------- structure: topology ---------- */
 
-.structure {
+/* Mobile: a tree view with one trunk on the left and a short link to every node. */
+.topology {
+  --line: var(--border-strong);
+  --trunk: 20px;
+  position: relative;
   display: grid;
   gap: var(--space-6);
+  padding-left: var(--trunk);
 }
 
-.structure__tier {
+.topology::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 40px; /* ends at the centre of a one-line last node (80px tall) */
+  width: 1px;
+  background: var(--line);
+}
+
+.topology__label {
+  position: relative;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.topology__label::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--trunk) * -1 - 3px);
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+.topology__nodes {
   display: grid;
-  gap: var(--space-4);
-  justify-content: center;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
-.structure__tier--teacher {
-  grid-template-columns: minmax(0, 420px);
+.topology__node {
+  position: relative;
 }
 
-.structure__tier--core {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 360px));
-}
-
-.structure__tier--officer {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-@media (min-width: 640px) {
-  .structure__tier--officer {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 260px));
-  }
-  .structure__tier--core,
-  .structure__tier--officer {
-    gap: var(--space-5);
-  }
+.topology__node::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--trunk) * -1);
+  top: 50%;
+  width: var(--trunk);
+  height: 1px;
+  background: var(--line);
 }
 
 .profile-card {
@@ -593,18 +657,16 @@ main:focus {
   align-items: center;
   gap: var(--space-4);
   height: 100%;
-  padding: var(--space-4);
+  padding: var(--space-3) var(--space-4);
   border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--surface);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease, border-color var(--dur-base) ease;
 }
 
 .profile-card__photo {
-  width: 72px;
+  width: 56px;
   flex-shrink: 0;
-  border-radius: var(--radius-md);
+  border-radius: 50%;
 }
 
 .profile-card__body {
@@ -612,76 +674,208 @@ main:focus {
 }
 
 .profile-card__role {
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
   color: var(--accent-strong);
 }
 
 .profile-card__name {
-  margin-top: var(--space-1);
-  font-size: var(--text-lg);
-  letter-spacing: -0.015em;
+  margin-top: 2px;
+  font-size: var(--text-card);
+  letter-spacing: -0.01em;
 }
 
 .profile-card__name--empty {
+  font-family: var(--font-sans);
   font-weight: 500;
   color: var(--text-muted);
 }
 
 .profile-card__desc {
-  margin-top: var(--space-2);
+  margin-top: var(--space-1);
   font-size: var(--text-sm);
   color: var(--text-muted);
 }
 
-.profile-card--lg {
-  padding: var(--space-5);
-}
-
 .profile-card--lg .profile-card__photo {
-  width: 104px;
+  width: 72px;
 }
 
 .profile-card--lg .profile-card__name {
   font-size: var(--text-xl);
 }
 
-.profile-card--sm {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-3);
-  padding: var(--space-3);
+.profile-card .photo__initials {
+  font-size: 1.125rem;
 }
 
-.profile-card--sm .profile-card__photo {
-  width: 100%;
-}
-
-.profile-card--sm .profile-card__body {
-  padding: 0 var(--space-1) var(--space-1);
-}
-
-.profile-card--sm .profile-card__name {
-  font-size: var(--text-card);
-}
-
-@media (min-width: 640px) {
-  .profile-card--lg {
-    gap: var(--space-6);
-    padding: var(--space-6);
+/* Tablet up: a top-down network. Trunk from the tier above, a bus over each tier, a link down to every node. */
+@media (min-width: 768px) {
+  .topology {
+    --tick: 24px;
+    gap: 0;
+    padding-left: 0;
   }
+
+  .topology::before {
+    content: none;
+  }
+
+  .topology__tier {
+    position: relative;
+    padding-top: 56px;
+  }
+
+  .topology__tier--root {
+    padding-top: 0;
+  }
+
+  .topology__tier:not(.topology__tier--root)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 1px;
+    height: 56px;
+    background: var(--line);
+  }
+
+  .topology__label {
+    position: absolute;
+    top: 4px;
+    left: calc(50% + 12px);
+    margin: 0;
+  }
+
+  .topology__label::before {
+    content: none;
+  }
+
+  /* The root role is already on its card. */
+  .topology__tier--root .topology__label {
+    display: none;
+  }
+
+  .topology__nodes {
+    --node-w: 220px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--tick) var(--space-5);
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding-top: var(--tick);
+  }
+
+  .topology__tier--root .topology__nodes {
+    padding-top: 0;
+  }
+
+  /* Bus line from the first node's centre to the last node's centre. */
+  .topology__nodes::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: calc(var(--node-w) / 2);
+    right: calc(var(--node-w) / 2);
+    height: 1px;
+    background: var(--line);
+  }
+
+  .topology__tier--root .topology__nodes::before {
+    content: none;
+  }
+
+  .topology__tier--core .topology__nodes {
+    --node-w: 240px;
+  }
+
+  .topology__tier--officer .topology__nodes {
+    --node-w: 200px;
+  }
+
+  .topology__node {
+    width: var(--node-w);
+  }
+
+  .topology__node::before {
+    left: 50%;
+    top: calc(var(--tick) * -1);
+    width: 1px;
+    height: var(--tick);
+  }
+
+  .topology__tier--root .topology__node {
+    width: 280px;
+  }
+
+  .topology__tier--root .topology__node::before {
+    content: none;
+  }
+
+  .profile-card {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-5) var(--space-4);
+    text-align: center;
+  }
+
+  .profile-card__photo {
+    width: 80px;
+  }
+
   .profile-card--lg .profile-card__photo {
-    width: 128px;
+    width: 112px;
+  }
+
+  .profile-card--sm .profile-card__photo {
+    width: 64px;
+  }
+
+  .profile-card .photo__initials {
+    font-size: 1.375rem;
   }
 }
 
-@media (hover: hover) {
-  .profile-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--border-strong);
+.structure__more {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--space-6);
+}
+
+.skeleton-node {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+}
+
+.skeleton-node__photo {
+  width: 56px;
+  aspect-ratio: 1;
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.skeleton-node__line {
+  height: 18px;
+  flex: 1;
+  border-radius: var(--radius-sm);
+}
+
+@media (min-width: 768px) {
+  .skeleton-node {
+    flex-direction: column;
+    padding: var(--space-5) var(--space-4);
+  }
+  .skeleton-node__photo {
+    width: 80px;
+  }
+  .skeleton-node__line {
+    flex: none;
+    width: 70%;
   }
 }
 
@@ -721,9 +915,6 @@ main:focus {
   color: var(--text-muted);
 }
 
-.profile-card:not(.profile-card--sm):not(.profile-card--lg) .photo__initials {
-  font-size: 1.25rem;
-}
 
 /* ---------- members ---------- */
 
@@ -764,11 +955,11 @@ main:focus {
   border: 0;
   background: none;
   text-align: left;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xs);
 }
 
 .member-card__photo {
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xs);
 }
 
 .member-card__photo img {
@@ -782,9 +973,7 @@ main:focus {
 }
 
 .member-card__number {
-  font-size: var(--text-xs);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
+  font-size: var(--text-sm);
   color: var(--text-muted);
 }
 
@@ -797,7 +986,9 @@ main:focus {
 }
 
 .member-card__photo {
-  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: transform var(--dur-base) var(--ease-out), outline-color var(--dur-fast) ease;
 }
 
 .member-card:active .member-card__photo {
@@ -806,8 +997,7 @@ main:focus {
 
 @media (hover: hover) {
   .member-card:hover .member-card__photo {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-md);
+    outline-color: var(--accent);
   }
   .member-card:hover .member-card__photo img {
     transform: scale(1.04);
@@ -819,6 +1009,65 @@ main:focus {
 
 .member-card:focus-visible {
   outline-offset: 4px;
+}
+
+/* Homepage strip: one row of faces with scroll-snap, ending in a "See all" card. */
+.member-strip {
+  display: flex;
+  gap: var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 4px 4px var(--space-4);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scrollbar-width: thin;
+}
+
+.member-strip__item {
+  flex: 0 0 clamp(148px, 40vw, 200px);
+  scroll-snap-align: start;
+}
+
+.member-strip__more {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 3 / 4;
+  padding: var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
+}
+
+.member-strip__more:hover {
+  border-color: var(--accent);
+}
+
+.member-strip__more-count {
+  font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+  line-height: 1;
+  color: var(--accent-strong);
+}
+
+.member-strip__more-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+}
+
+.skeleton--member {
+  aspect-ratio: 3 / 4;
+  border-radius: var(--radius-xs);
+}
+
+@media (min-width: 640px) {
+  .member-strip {
+    gap: var(--space-5);
+  }
 }
 
 /* ---------- gallery ---------- */
@@ -858,7 +1107,7 @@ main:focus {
   width: 100%;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   background: none;
   overflow: hidden;
   text-align: left;
@@ -872,15 +1121,27 @@ main:focus {
   transition: opacity var(--dur-slow) ease, transform 700ms var(--ease-out);
 }
 
-.gallery-tile__caption {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 40px var(--space-4) var(--space-4);
-  background: linear-gradient(to top, rgba(5, 7, 12, 0.75), transparent);
-  color: #f8fafc;
+/* Captions sit under the photo, visible on every device (redesign.txt 2.6). */
+.gallery-caption {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin-top: var(--space-2);
   font-size: var(--text-sm);
-  font-weight: 500;
   line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.gallery-caption__text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.gallery-caption__date {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
 }
 
 .gallery-tile__expand {
@@ -901,22 +1162,71 @@ main:focus {
 }
 
 @media (hover: hover) {
-  .gallery-tile__caption {
-    opacity: 0;
-    transform: translateY(6px);
-    transition: opacity var(--dur-base) ease, transform var(--dur-base) var(--ease-out);
-  }
   .gallery-tile:hover .gallery-tile__photo img {
     transform: scale(1.05);
-  }
-  .gallery-tile:hover .gallery-tile__caption,
-  .gallery-tile:focus-visible .gallery-tile__caption {
-    opacity: 1;
-    transform: none;
   }
   .gallery-tile:hover .gallery-tile__expand,
   .gallery-tile:focus-visible .gallery-tile__expand {
     opacity: 1;
+  }
+}
+
+/* Homepage bento: one featured photo, then up to four small ones. Photos are cropped to the tile. */
+.gallery-bento {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-5) var(--space-3);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.gallery-bento__item {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gallery-bento__item--featured {
+  grid-column: 1 / -1;
+}
+
+.gallery-bento .gallery-tile {
+  aspect-ratio: 1;
+}
+
+.gallery-bento__item--featured .gallery-tile {
+  aspect-ratio: 4 / 3;
+}
+
+.gallery-bento .gallery-tile__photo {
+  position: absolute;
+  inset: 0;
+}
+
+.gallery-bento__skeleton {
+  aspect-ratio: 1;
+  border-radius: var(--radius-sm);
+}
+
+.gallery-bento__item--featured .gallery-bento__skeleton {
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 900px) {
+  .gallery-bento {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-5);
+  }
+  .gallery-bento__item--featured {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 2;
+  }
+  .gallery-bento__item--featured .gallery-tile,
+  .gallery-bento__item--featured .gallery-bento__skeleton {
+    flex: 1 1 auto;
+    aspect-ratio: auto;
+    min-height: 280px;
   }
 }
 
@@ -1480,6 +1790,8 @@ main:focus {
 /* ---------- footer ---------- */
 
 .footer {
+  background: var(--bg);
+  color: var(--text);
   border-top: 1px solid var(--border);
   padding-top: var(--space-16);
   padding-bottom: max(var(--space-8), env(safe-area-inset-bottom));
@@ -1494,8 +1806,25 @@ main:focus {
   display: inline-flex;
   align-items: center;
   gap: var(--space-3);
+  min-height: 44px;
   font-size: var(--text-lg);
-  font-weight: 700;
+}
+
+.footer__place {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.footer__credits {
+  margin-top: var(--space-10);
+  max-width: 72ch;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+}
+
+.footer__credits .mono {
+  color: var(--text);
 }
 
 .footer__tagline {
@@ -1506,10 +1835,7 @@ main:focus {
 
 .footer__label {
   margin-bottom: var(--space-3);
-  font-size: var(--text-xs);
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: var(--text-sm);
   color: var(--text-muted);
 }
 
@@ -1648,6 +1974,10 @@ main:focus {
   padding-top: var(--nav-h);
 }
 
+.not-found .eyebrow::before {
+  content: none;
+}
+
 .not-found .btn {
   margin-top: var(--space-8);
 }
@@ -1661,17 +1991,6 @@ main:focus {
 
 /* ---------- loading placeholders ---------- */
 
-.structure-skeleton {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-  gap: var(--space-4);
-}
-
-.structure__more {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-6);
-}
 
 .text-skeleton {
   display: grid;

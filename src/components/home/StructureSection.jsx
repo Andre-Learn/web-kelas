@@ -3,7 +3,7 @@ import SectionHeading from '../SectionHeading.jsx';
 import StructureChart from '../StructureChart.jsx';
 import Icon from '../Icon.jsx';
 import { useContent } from '../../context/ContentContext.jsx';
-import { EmptyState, SkeletonGrid } from '../States.jsx';
+import { EmptyState, StructureSkeleton } from '../States.jsx';
 
 export default function StructureSection() {
   const { content, status } = useContent();
@@ -12,7 +12,8 @@ export default function StructureSection() {
       <div className="container">
         <SectionHeading
           id="structure-title"
-          eyebrow="Class structure"
+          index="02"
+          eyebrow="Structure"
           title="The people who keep us organised"
           description="Our homeroom teacher and class officers, from the top of the structure down."
           action={
@@ -23,7 +24,7 @@ export default function StructureSection() {
           }
         />
         {status === 'loading' ? (
-          <SkeletonGrid count={3} className="structure-skeleton" ratio="3 / 1" />
+          <StructureSkeleton />
         ) : content.officers.length ? (
           <StructureChart officers={content.officers} limit={4} moreHref="/structure" />
         ) : (
