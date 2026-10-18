@@ -572,6 +572,74 @@ main:focus {
   line-height: 1.1;
 }
 
+/* Mobile only (below 640px): the grid follows how many figures are published, so the row never ends
+   with one orphan. 1-2 figures: one row; 3: three columns; 4: a 2x2 block. */
+@media (max-width: 639px) {
+  .about__facts[data-count='1'] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .about__facts[data-count='3'] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-6) var(--space-3);
+  }
+}
+
+/* Phones (480px and below): tighter, more even vertical rhythm and readable type. */
+@media (max-width: 480px) {
+  .about__grid {
+    gap: var(--space-6);
+  }
+  .about__headline {
+    margin-top: var(--space-3);
+    max-width: none;
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+  .about__body {
+    gap: var(--space-4);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+  .about__intro {
+    font-size: 1.125rem;
+    line-height: 1.6;
+  }
+  .about__program {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .about__facts {
+    margin-top: var(--space-2);
+  }
+  .about__fact dt {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+  .about__fact dd {
+    font-size: 2.25rem;
+  }
+}
+
+/* Very narrow screens (under 340px): three columns would crowd the labels, so each figure becomes a
+   full-width row, label left and number right, still topped by the thin rule. */
+@media (max-width: 339px) {
+  .about__facts,
+  .about__facts[data-count='3'] {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+  .about__fact {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+  .about__fact dd {
+    margin-top: 0;
+  }
+}
+
 @media (min-width: 640px) {
   .about__facts {
     grid-template-columns: repeat(4, minmax(0, 1fr));

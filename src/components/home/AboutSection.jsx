@@ -53,7 +53,7 @@ export default function AboutSection() {
         </Reveal>
 
         {stats.length ? (
-          <Reveal as="dl" className="about__facts" delay={0.14}>
+          <Reveal as="dl" className="about__facts" data-count={stats.length} delay={0.14}>
             {stats.map((stat) => (
               <div key={stat.label} className="about__fact">
                 <dt>{stat.label}</dt>
