@@ -5,7 +5,7 @@
  *    3:1 needed); --accent-strong #0f766e is 4.98:1 on --bg-alt and carries white text at 5.47:1.
  * Light-mode --accent is used for non-text marks (underlines, focus borders, spinners) and must be
  * 3:1 or more on every background; --accent-strong is used for text and must be 4.5:1 or more.
- * Accent rules for dark mode also match nested [data-theme='dark'] bands (gallery band, footer). */
+ * The gallery and footer no longer force a theme; every dark-mode accent rule follows <html data-theme>. */
 
 :root {
   --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;

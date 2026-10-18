@@ -7,13 +7,13 @@ import { useContent } from '../../context/ContentContext.jsx';
 
 const PREVIEW_COUNT = 5;
 
-// The one dark band on the homepage (redesign.txt 3.9). data-theme switches every token inside it.
+// Follows the visitor's global theme: no forced data-theme, so tokens resolve from <html data-theme>.
 export default function GallerySection() {
   const { content, status } = useContent();
   const images = content.gallery;
 
   return (
-    <section className="section section--dark" data-theme="dark" aria-labelledby="gallery-title">
+    <section className="section" aria-labelledby="gallery-title">
       <div className="container">
         <SectionHeading
           id="gallery-title"

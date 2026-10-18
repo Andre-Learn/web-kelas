@@ -1790,7 +1790,7 @@ main:focus {
 /* ---------- footer ---------- */
 
 .footer {
-  background: var(--bg);
+  background: var(--bg-alt);
   color: var(--text);
   border-top: 1px solid var(--border);
   padding-top: var(--space-16);
@@ -1972,10 +1972,6 @@ main:focus {
   align-items: center;
   min-height: 70vh;
   padding-top: var(--nav-h);
-}
-
-.not-found .eyebrow::before {
-  content: none;
 }
 
 .not-found .btn {

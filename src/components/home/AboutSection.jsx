@@ -36,7 +36,7 @@ export default function AboutSection() {
     <section id="about" className="section about" aria-labelledby="about-title">
       <div className="container about__grid">
         <Reveal className="about__lead">
-          <Eyebrow index="01">About the class</Eyebrow>
+          <Eyebrow index="01">About</Eyebrow>
           <h2 id="about-title" className="about__headline">
             {about.headline}
           </h2>

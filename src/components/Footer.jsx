@@ -11,7 +11,7 @@ export default function Footer() {
   const place = [school, city].map((v) => v?.trim()).filter(Boolean).join(', ');
 
   return (
-    <footer className="footer" data-theme="dark">
+    <footer className="footer">
       <div className="container">
         <div className="footer__top">
           <div className="footer__identity">
