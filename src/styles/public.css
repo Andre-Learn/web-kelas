@@ -660,74 +660,116 @@ main:focus {
 /* ---------- structure: organisation chart ---------- */
 
 /*
- * Levels are nested (teacher > leadership > officers). Mobile draws a tree with a trunk on the left and an elbow
- * to every group; from 768px the levels are centred and joined by a stem and a horizontal bus.
+ * One diagram at every width: levels are centred and joined by a stem and a horizontal bus; groups are framed;
+ * a deputy is joined to its primary position. Only the sizes change (custom properties below), so mobile is a
+ * compact copy of desktop. A level that is too wide for a phone stacks each group's deputy under the primary
+ * position (see .org__level--stacked-sm); if it is still too wide, only the chart scrolls sideways, never the page.
  * Lines are CSS borders in a faint teal-tinted neutral. Entrance motion is driven by [data-revealed] on .org.
  */
 .org {
   --org-line: color-mix(in srgb, var(--accent) 38%, var(--border-strong));
-  --org-gap: 16px;
-  --photo: 64px;
+  /* compact sizes (phones) */
+  --photo: 56px;
+  --node-w: 132px;
+  --node-pad: 10px;
+  --frame-pad: 8px;
+  --group-x: 4px;
+  --pgap: 10px;
+  --stem: 20px;
+  display: flex;
+  justify-content: safe center;
+  /* Only the chart scrolls if a level ever has more groups than fit; the page never does. */
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.org__level {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Grows with its content; .org scrolls, so nothing is ever clipped on the unreachable left side. */
+  flex: none;
 }
 
 .org__level--nested {
-  position: relative;
-  margin: 20px 0 0 14px;
-  padding-left: 20px;
+  padding-top: var(--stem);
 }
 
-/* Stem from the parent block down to the first elbow. */
+/* Stem from the level above down to the bus. */
 .org__level--nested::before {
   content: '';
   position: absolute;
-  left: 0;
-  top: -20px;
-  height: 20px;
+  left: 50%;
+  top: 0;
+  height: var(--stem);
   border-left: 1px solid var(--org-line);
 }
 
+/* One row of groups so the bus above them stays correct; frames narrow and wrap their people before the row wraps. */
 .org__groups,
 .org__people {
-  display: grid;
-  gap: var(--org-gap);
-  padding: 0;
+  display: flex;
   margin: 0;
+  padding: 0;
   list-style: none;
 }
 
+.org__groups {
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+}
+
 .org__people {
-  gap: 12px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: var(--pgap);
 }
 
 .org__group {
   position: relative;
-  min-width: 0;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  padding: 0 var(--group-x);
 }
 
-/* Elbow and trunk (mobile tree). */
+.org__level--nested > .org__groups > .org__group {
+  padding-top: var(--stem);
+}
+
+/* Bus across the groups of a level, and a stem into each group. */
 .org__level--nested > .org__groups > .org__group::before {
   content: '';
   position: absolute;
-  left: -20px;
+  left: 0;
+  right: 0;
   top: 0;
-  width: 20px;
-  height: 30px;
-  border-left: 1px solid var(--org-line);
-  border-bottom: 1px solid var(--org-line);
-  border-bottom-left-radius: 10px;
+  border-top: 1px solid var(--org-line);
 }
-
-.org__level--nested > .org__groups > .org__group:not(:last-child)::after {
+.org__level--nested > .org__groups > .org__group:first-child::before {
+  left: 50%;
+}
+.org__level--nested > .org__groups > .org__group:last-child::before {
+  right: 50%;
+}
+.org__level--nested > .org__groups > .org__group:only-child::before {
+  display: none;
+}
+.org__level--nested > .org__groups > .org__group::after {
   content: '';
   position: absolute;
-  left: -20px;
-  top: 30px;
-  bottom: calc(var(--org-gap) * -1);
+  left: 50%;
+  top: 0;
+  height: var(--stem);
   border-left: 1px solid var(--org-line);
 }
 
 .org__frame {
-  padding: 12px;
+  flex: 1;
+  padding: var(--frame-pad);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
 }
@@ -739,8 +781,9 @@ main:focus {
 }
 
 .org__group-label {
-  margin: 0 0 10px;
-  font-size: 0.75rem;
+  margin: 0 0 6px;
+  text-align: center;
+  font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1.4;
   letter-spacing: 0.02em;
@@ -749,25 +792,57 @@ main:focus {
 
 .org__person {
   position: relative;
-  min-width: 0;
 }
 
-/* A deputy hangs from the primary position above it. */
+/* A deputy is joined to the primary position beside it. */
 .org__person + .org__person::before {
   content: '';
   position: absolute;
-  left: calc(12px + var(--photo) / 2);
-  top: -12px;
-  height: 12px;
+  left: calc(var(--pgap) * -1);
+  top: calc(var(--node-pad) + var(--photo) / 2);
+  width: var(--pgap);
+  border-top: 1px solid var(--org-line);
+}
+
+/* Stacked: deputies sit under the primary position, joined by a short vertical line. */
+.org__level--stacked .org__people {
+  flex-direction: column;
+  align-items: center;
+}
+.org__level--stacked .org__person + .org__person::before {
+  left: 50%;
+  top: calc(var(--pgap) * -1);
+  width: 0;
+  height: var(--pgap);
+  border-top: 0;
   border-left: 1px solid var(--org-line);
+}
+
+@media (max-width: 767px) {
+  .org__level--stacked-sm .org__people {
+    flex-direction: column;
+    align-items: center;
+  }
+  .org__level--stacked-sm .org__person + .org__person::before {
+    left: 50%;
+    top: calc(var(--pgap) * -1);
+    width: 0;
+    height: var(--pgap);
+    border-top: 0;
+    border-left: 1px solid var(--org-line);
+  }
 }
 
 .org-node {
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  gap: 14px;
-  min-width: 0;
-  padding: 12px;
+  gap: 8px;
+  width: var(--node-w);
+  height: 100%;
+  padding: var(--node-pad) 8px;
+  text-align: center;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -782,11 +857,12 @@ main:focus {
 
 .org-node__body {
   min-width: 0;
+  max-width: 100%;
 }
 
 .org-node__name {
   font-family: var(--font-display);
-  font-size: 1.0625rem;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.01em;
@@ -800,18 +876,18 @@ main:focus {
 }
 
 .org-node__role {
-  margin-top: 4px;
-  font-size: 0.8125rem;
+  margin-top: 3px;
+  font-size: 0.71875rem;
   font-weight: 500;
-  line-height: 1.4;
+  line-height: 1.35;
   color: var(--text-muted);
   overflow-wrap: break-word;
 }
 
 .org-node__desc {
-  margin-top: 6px;
-  font-size: var(--text-sm);
-  line-height: 1.45;
+  margin-top: 4px;
+  font-size: var(--text-xs);
+  line-height: 1.4;
   color: var(--text-muted);
 }
 
@@ -820,144 +896,29 @@ main:focus {
     --photo: 80px;
     --node-w: 140px;
     --node-pad: 16px;
-    display: flex;
-    justify-content: safe center;
-    /* Only the chart scrolls if a level ever has more groups than fit; the page never does. */
-    overflow-x: auto;
-    padding-bottom: 2px;
+    --frame-pad: 14px;
+    --group-x: 12px;
+    --pgap: 16px;
+    --stem: 24px;
   }
-
-  .org__level {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 100%;
-  }
-
-  .org__level--nested {
-    margin: 0;
-    padding: 24px 0 0;
-  }
-
-  .org__level--nested::before {
-    left: 50%;
-    top: 0;
-    height: 24px;
-  }
-
-  /* One row of groups so the bus above them stays correct; frames narrow and wrap their people before the row wraps. */
-  .org__groups {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    gap: 0;
-  }
-
-  .org__people {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: stretch;
-    gap: 16px;
-  }
-
-  /* Stacked variant: deputies sit under the primary position, joined by a short vertical line. */
-  .org__level--stacked .org__people {
-    flex-direction: column;
-    align-items: center;
-  }
-  .org__level--stacked .org__person + .org__person::before {
-    left: 50%;
-    top: -16px;
-    width: 0;
-    height: 16px;
-    border-top: 0;
-    border-left: 1px solid var(--org-line);
-  }
-
-  .org__level--nested > .org__groups > .org__group {
-    padding: 24px 12px 0;
-  }
-
-  .org__level--root > .org__groups > .org__group {
-    padding: 0 12px;
-  }
-
-  /* Groups on one row share a height so the frames line up. */
-  .org__groups {
-    align-items: stretch;
-  }
-  .org__group {
-    display: flex;
-    flex: 0 1 auto;
-    flex-direction: column;
-    min-width: auto;
-  }
-  .org__frame {
-    flex: 1;
-  }
-
-  /* Bus across the groups of a level, and a stem into each group. */
-  .org__level--nested > .org__groups > .org__group::before {
-    left: 0;
-    right: 0;
-    top: 0;
-    width: auto;
-    height: 0;
-    border-left: 0;
-    border-bottom: 0;
-    border-top: 1px solid var(--org-line);
-    border-radius: 0;
-  }
-  .org__level--nested > .org__groups > .org__group:first-child::before {
-    left: 50%;
-  }
-  .org__level--nested > .org__groups > .org__group:last-child::before {
-    right: 50%;
-  }
-  .org__level--nested > .org__groups > .org__group:only-child::before {
-    display: none;
-  }
-  .org__level--nested > .org__groups > .org__group::after,
-  .org__level--nested > .org__groups > .org__group:not(:last-child)::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: auto;
-    height: 24px;
-    border-left: 1px solid var(--org-line);
-  }
-
-  .org__frame {
-    padding: 14px;
-  }
-
-  .org__frame--plain {
-    padding: 0;
-  }
-
-  .org__group-label {
-    text-align: center;
-  }
-
-  .org__person + .org__person::before {
-    left: -16px;
-    top: calc(var(--node-pad) + var(--photo) / 2);
-    width: 16px;
-    height: 0;
-    border-left: 0;
-    border-top: 1px solid var(--org-line);
-  }
-
   .org-node {
-    flex-direction: column;
-    justify-content: flex-start;
     gap: 12px;
-    width: var(--node-w);
-    height: 100%;
     padding: var(--node-pad) 12px;
-    text-align: center;
+  }
+  .org__group-label {
+    margin-bottom: 10px;
+    font-size: 0.75rem;
+  }
+  .org-node__name {
+    font-size: 1.0625rem;
+  }
+  .org-node__role {
+    margin-top: 4px;
+    font-size: 0.8125rem;
+  }
+  .org-node__desc {
+    margin-top: 6px;
+    font-size: var(--text-sm);
   }
 }
 
@@ -983,6 +944,10 @@ main:focus {
   .org__person + .org__person::before {
     transition-delay: var(--d, 0s);
   }
+  .org__level--nested::before,
+  .org__level--nested > .org__groups > .org__group::after {
+    transform-origin: 50% 0;
+  }
   .org[data-revealed='false'] .org-node {
     opacity: 0;
     transform: translateY(10px);
@@ -992,13 +957,6 @@ main:focus {
   .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::after,
   .org[data-revealed='false'] .org__person + .org__person::before {
     opacity: 0;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
-  .org__level--nested::before,
-  .org__level--nested > .org__groups > .org__group::after {
-    transform-origin: 50% 0;
   }
   .org[data-revealed='false'] .org__level--nested::before,
   .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::after {
@@ -1012,24 +970,32 @@ main:focus {
 /* Loading placeholder shaped like the chart. */
 .org-skeleton {
   display: grid;
-  gap: 20px;
+  gap: 16px;
+  justify-items: center;
 }
 
 .org-skeleton__row {
-  display: grid;
-  gap: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.org-skeleton .skeleton-node {
+  flex-direction: column;
+  width: 132px;
+  padding: var(--space-3) var(--space-2);
 }
 
 @media (min-width: 768px) {
-  .org-skeleton {
-    justify-items: center;
-  }
   .org-skeleton__row {
-    display: flex;
-    justify-content: center;
     gap: 16px;
   }
   .org-skeleton .skeleton-node {
+    width: 176px;
+  }
+}
+
+.skeleton-node {
     width: 176px;
   }
 }

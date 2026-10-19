@@ -77,11 +77,11 @@ function OrgNode({ person }) {
 function OrgLevel({ levels, plan, depth }) {
   const level = levels[depth];
   const motion = plan[depth];
-  // Wide levels (more than four cards in one row) stack each group's deputies under the primary position
-  // so every group stays one card wide and the row still fits.
+  // Wide levels stack each group's deputies under the primary position so every group stays one card wide:
+  // more than four cards in a row on larger screens, more than two on phones (the leadership pair stays side by side).
   const cards = level.groups.reduce((n, group) => n + group.people.length, 0);
   return (
-    <div className={`org__level ${depth === 0 ? 'org__level--root' : 'org__level--nested'} ${cards > 4 ? 'org__level--stacked' : ''}`} style={{ '--line-d': `${motion.line.toFixed(2)}s` }}>
+    <div className={`org__level ${depth === 0 ? 'org__level--root' : 'org__level--nested'} ${cards > 4 ? 'org__level--stacked' : ''} ${cards > 2 ? 'org__level--stacked-sm' : ''}`} style={{ '--line-d': `${motion.line.toFixed(2)}s` }}>
       <h3 className="sr-only">{LEVEL_LABELS[level.tier]}</h3>
       <ul role="list" className="org__groups">
         {level.groups.map((group) => (
@@ -114,7 +114,7 @@ export default function StructureChart({ officers }) {
   const [ref, revealed] = useRevealOnce();
   if (!levels.length) return null;
   return (
-    <div ref={ref} className="org" data-revealed={revealed ? 'true' : 'false'}>
+    <div ref={ref} className="org" data-revealed={revealed ? 'true' : 'false'} role="region" aria-label="Class organisation chart" tabIndex={0}>
       <OrgLevel levels={levels} plan={plan} depth={0} />
     </div>
   );
