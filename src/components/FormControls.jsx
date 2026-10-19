@@ -46,6 +46,23 @@ export function TextArea({ label, hint, error, optional, rows = 4, ...props }) {
   );
 }
 
+export function Checkbox({ label, hint, ...props }) {
+  const id = useId();
+  return (
+    <div className="field field--check">
+      <label htmlFor={id} className="check">
+        <input id={id} type="checkbox" aria-describedby={hint ? `${id}-hint` : undefined} {...props} />
+        <span>{label}</span>
+      </label>
+      {hint ? (
+        <p id={`${id}-hint`} className="field__hint">
+          {hint}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
 export function Select({ label, hint, error, options, ...props }) {
   return (
     <Field label={label} hint={hint} error={error}>

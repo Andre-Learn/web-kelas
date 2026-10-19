@@ -122,5 +122,27 @@ export default function useCollection(collection, { folder, imageMap, noun }) {
     [collection, items, moving, ready, toast, update],
   );
 
-  return { items, save, addMany, remove, move, stage, busy: stage !== null, moving, ready };
+  /** Saves a complete new order (every item exactly once). Rolls the list back if the request fails. */
+  const reorder = useCallback(
+    async (next) => {
+      if (!ready || moving || next.length !== items.length) return false;
+      const previous = items;
+      update(collection, next);
+      setMoving(true);
+      try {
+        const saved = await saveOrder(collection, next);
+        update(collection, saved);
+        return true;
+      } catch (err) {
+        update(collection, previous);
+        toast.error(`Order not saved: ${err.message}`);
+        return false;
+      } finally {
+        setMoving(false);
+      }
+    },
+    [collection, items, moving, ready, toast, update],
+  );
+
+  return { items, save, addMany, remove, move, reorder, stage, busy: stage !== null, moving, ready };
 }

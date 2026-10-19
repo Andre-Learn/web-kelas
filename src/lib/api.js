@@ -16,7 +16,16 @@ const LOCAL_KEY = 'tjkt:preview-content';
 const COLLECTIONS = {
   officers: {
     table: 'officers',
-    fields: { name: 'name', role: 'role', tier: 'tier', description: 'description', photo: 'photo_url', photoPath: 'photo_path' },
+    fields: {
+      name: 'name',
+      role: 'role',
+      tier: 'tier',
+      description: 'description',
+      photo: 'photo_url',
+      photoPath: 'photo_path',
+      groupName: 'group_name',
+      isDeputy: 'is_deputy',
+    },
   },
   members: {
     table: 'members',
@@ -38,14 +47,34 @@ const COLLECTIONS = {
   },
 };
 
-const NULLABLE_EMPTY = new Set(['taken_on', 'class_number', 'width', 'height']);
+const NULLABLE_EMPTY = new Set(['taken_on', 'class_number', 'width', 'height', 'group_name']);
+
+// Officer group columns come from supabase/migrations/2026-10-19-officer-groups.sql. Until that migration has been
+// run, they are left out of writes so the existing officer CRUD keeps working unchanged.
+const OFFICER_GROUP_COLUMNS = new Set(['group_name', 'is_deputy']);
+let officerGroupColumns = true;
+
+/** False when the database has not received the officer-groups migration yet. */
+export function officerGroupsAvailable() {
+  return officerGroupColumns;
+}
+
+function friendlyError(error) {
+  const message = error?.message || 'Unknown error.';
+  if (/group_name|is_deputy/.test(message)) {
+    return 'The officer groups migration has not been applied to the database yet (supabase/migrations/2026-10-19-officer-groups.sql).';
+  }
+  return message;
+}
 
 function toRow(collection, item, index) {
   const { fields } = COLLECTIONS[collection];
   const row = { id: item.id, sort_order: index ?? item.order ?? 0 };
   for (const [key, column] of Object.entries(fields)) {
+    if (!officerGroupColumns && OFFICER_GROUP_COLUMNS.has(column)) continue;
     const value = item[key];
-    row[column] = value === '' && NULLABLE_EMPTY.has(column) ? null : value ?? (column === 'name' ? '' : null);
+    if (column === 'is_deputy') row[column] = Boolean(value);
+    else row[column] = value === '' && NULLABLE_EMPTY.has(column) ? null : value ?? (column === 'name' ? '' : null);
   }
   return row;
 }
@@ -53,7 +82,7 @@ function toRow(collection, item, index) {
 function fromRow(collection, row) {
   const { fields } = COLLECTIONS[collection];
   const item = { id: row.id, order: row.sort_order ?? 0 };
-  for (const [key, column] of Object.entries(fields)) item[key] = row[column] ?? '';
+  for (const [key, column] of Object.entries(fields)) item[key] = column === 'is_deputy' ? Boolean(row[column]) : row[column] ?? '';
   return item;
 }
 
@@ -107,6 +136,8 @@ export async function fetchContent() {
   ]);
   const failed = [settings, officers, members, gallery].find((r) => r.error);
   if (failed) throw new Error(failed.error.message);
+  // A non-empty result shows which columns exist; an empty table can't tell, so the last known state stays.
+  if (officers.data.length) officerGroupColumns = 'group_name' in officers.data[0];
 
   return {
     settings: mergeSettings(settings.data?.data),
@@ -146,7 +177,7 @@ export async function saveItem(collection, item, index) {
     .upsert(toRow(collection, record, index))
     .select()
     .single();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(friendlyError(error));
   return fromRow(collection, data);
 }
 
@@ -163,7 +194,7 @@ export async function insertItems(collection, items, startIndex = 0) {
     .from(COLLECTIONS[collection].table)
     .insert(records.map((r) => toRow(collection, r, r.order)))
     .select();
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(friendlyError(error));
   return data.map((r) => fromRow(collection, r)).sort((a, b) => a.order - b.order);
 }
 
@@ -199,7 +230,7 @@ export async function saveOrder(collection, items) {
     .from(COLLECTIONS[collection].table)
     .upsert(changed.map((item) => toRow(collection, item, item.order)))
     .select('id');
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(friendlyError(error));
   if ((data?.length ?? 0) !== changed.length) throw new Error('The new order was not saved for every item. Reload and try again.');
   return ordered;
 }

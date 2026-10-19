@@ -55,14 +55,17 @@ export const defaultSettings = {
   },
 };
 
-// Suggested roles an administrator can add in one step from Structure settings.
-// They are never shown publicly until they have been saved as real records.
+// Suggested positions an administrator can add in one step from Structure settings.
+// They are never shown publicly until they have been saved as real records, and every one can be edited,
+// regrouped, reordered or removed afterwards. Grouping needs supabase/migrations/2026-10-19-officer-groups.sql.
 export const STARTER_ROLES = [
-  { name: '', role: 'Homeroom Teacher', tier: 'teacher', description: '', photo: '' },
-  { name: '', role: 'Class President', tier: 'core', description: '', photo: '' },
-  { name: '', role: 'Vice President', tier: 'core', description: '', photo: '' },
-  { name: '', role: 'Secretary', tier: 'officer', description: '', photo: '' },
-  { name: '', role: 'Treasurer', tier: 'officer', description: '', photo: '' },
+  { name: '', role: 'Wali Kelas', tier: 'teacher', groupName: '', isDeputy: false, description: '', photo: '' },
+  { name: '', role: 'Ketua Kelas', tier: 'core', groupName: 'Class leadership', isDeputy: false, description: '', photo: '' },
+  { name: '', role: 'Wakil Ketua Kelas', tier: 'core', groupName: 'Class leadership', isDeputy: true, description: '', photo: '' },
+  { name: '', role: 'Sekretaris', tier: 'officer', groupName: 'Secretary', isDeputy: false, description: '', photo: '' },
+  { name: '', role: 'Wakil Sekretaris', tier: 'officer', groupName: 'Secretary', isDeputy: true, description: '', photo: '' },
+  { name: '', role: 'Bendahara', tier: 'officer', groupName: 'Treasurer', isDeputy: false, description: '', photo: '' },
+  { name: '', role: 'Wakil Bendahara', tier: 'officer', groupName: 'Treasurer', isDeputy: true, description: '', photo: '' },
 ];
 
 export const defaultContent = {

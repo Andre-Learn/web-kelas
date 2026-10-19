@@ -657,260 +657,381 @@ main:focus {
   }
 }
 
-/* ---------- structure: topology ---------- */
+/* ---------- structure: organisation chart ---------- */
 
-/* Mobile: a tree view with one trunk on the left and a short link to every node. */
-.topology {
-  --line: var(--border-strong);
-  --trunk: 20px;
-  position: relative;
-  display: grid;
-  gap: var(--space-6);
-  padding-left: var(--trunk);
+/*
+ * Levels are nested (teacher > leadership > officers). Mobile draws a tree with a trunk on the left and an elbow
+ * to every group; from 768px the levels are centred and joined by a stem and a horizontal bus.
+ * Lines are CSS borders in a faint teal-tinted neutral. Entrance motion is driven by [data-revealed] on .org.
+ */
+.org {
+  --org-line: color-mix(in srgb, var(--accent) 38%, var(--border-strong));
+  --org-gap: 16px;
+  --photo: 64px;
 }
 
-.topology::before {
+.org__level--nested {
+  position: relative;
+  margin: 20px 0 0 14px;
+  padding-left: 20px;
+}
+
+/* Stem from the parent block down to the first elbow. */
+.org__level--nested::before {
   content: '';
   position: absolute;
   left: 0;
-  top: 12px;
-  bottom: 40px; /* ends at the centre of a one-line last node (80px tall) */
-  width: 1px;
-  background: var(--line);
+  top: -20px;
+  height: 20px;
+  border-left: 1px solid var(--org-line);
 }
 
-.topology__label {
-  position: relative;
-  margin-bottom: var(--space-3);
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-}
-
-.topology__label::before {
-  content: '';
-  position: absolute;
-  left: calc(var(--trunk) * -1 - 3px);
-  top: 50%;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  transform: translateY(-50%);
-}
-
-.topology__nodes {
+.org__groups,
+.org__people {
   display: grid;
-  gap: var(--space-3);
-  list-style: none;
-  margin: 0;
+  gap: var(--org-gap);
   padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
-.topology__node {
+.org__people {
+  gap: 12px;
+}
+
+.org__group {
   position: relative;
-}
-
-.topology__node::before {
-  content: '';
-  position: absolute;
-  left: calc(var(--trunk) * -1);
-  top: 50%;
-  width: var(--trunk);
-  height: 1px;
-  background: var(--line);
-}
-
-.profile-card {
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  height: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--surface);
-}
-
-.profile-card__photo {
-  width: 56px;
-  flex-shrink: 0;
-  border-radius: 50%;
-}
-
-.profile-card__body {
   min-width: 0;
 }
 
-.profile-card__role {
-  font-size: var(--text-sm);
-  color: var(--accent-strong);
+/* Elbow and trunk (mobile tree). */
+.org__level--nested > .org__groups > .org__group::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 0;
+  width: 20px;
+  height: 30px;
+  border-left: 1px solid var(--org-line);
+  border-bottom: 1px solid var(--org-line);
+  border-bottom-left-radius: 10px;
 }
 
-.profile-card__name {
-  margin-top: 2px;
-  font-size: var(--text-card);
+.org__level--nested > .org__groups > .org__group:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 30px;
+  bottom: calc(var(--org-gap) * -1);
+  border-left: 1px solid var(--org-line);
+}
+
+.org__frame {
+  padding: 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+}
+
+.org__frame--plain {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+.org__group-label {
+  margin: 0 0 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+}
+
+.org__person {
+  position: relative;
+  min-width: 0;
+}
+
+/* A deputy hangs from the primary position above it. */
+.org__person + .org__person::before {
+  content: '';
+  position: absolute;
+  left: calc(12px + var(--photo) / 2);
+  top: -12px;
+  height: 12px;
+  border-left: 1px solid var(--org-line);
+}
+
+.org-node {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.org-node__photo {
+  flex: none;
+  width: var(--photo);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px var(--org-line);
+}
+
+.org-node__body {
+  min-width: 0;
+}
+
+.org-node__name {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.25;
   letter-spacing: -0.01em;
+  color: var(--text);
+  overflow-wrap: break-word;
 }
 
-.profile-card__name--empty {
-  font-family: var(--font-sans);
+.org-node__name--empty {
   font-weight: 500;
   color: var(--text-muted);
 }
 
-.profile-card__desc {
-  margin-top: var(--space-1);
+.org-node__role {
+  margin-top: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-muted);
+  overflow-wrap: break-word;
+}
+
+.org-node__desc {
+  margin-top: 6px;
   font-size: var(--text-sm);
+  line-height: 1.45;
   color: var(--text-muted);
 }
 
-.profile-card--lg .profile-card__photo {
-  width: 72px;
-}
-
-.profile-card--lg .profile-card__name {
-  font-size: var(--text-xl);
-}
-
-.profile-card .photo__initials {
-  font-size: 1.125rem;
-}
-
-/* Tablet up: a top-down network. Trunk from the tier above, a bus over each tier, a link down to every node. */
 @media (min-width: 768px) {
-  .topology {
-    --tick: 24px;
-    gap: 0;
-    padding-left: 0;
+  .org {
+    --photo: 80px;
+    --node-w: 140px;
+    --node-pad: 16px;
+    display: flex;
+    justify-content: safe center;
+    /* Only the chart scrolls if a level ever has more groups than fit; the page never does. */
+    overflow-x: auto;
+    padding-bottom: 2px;
   }
 
-  .topology::before {
-    content: none;
+  .org__level {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 100%;
   }
 
-  .topology__tier {
-    position: relative;
-    padding-top: 56px;
-  }
-
-  .topology__tier--root {
-    padding-top: 0;
-  }
-
-  .topology__tier:not(.topology__tier--root)::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: 1px;
-    height: 56px;
-    background: var(--line);
-  }
-
-  .topology__label {
-    position: absolute;
-    top: 4px;
-    left: calc(50% + 12px);
+  .org__level--nested {
     margin: 0;
+    padding: 24px 0 0;
   }
 
-  .topology__label::before {
-    content: none;
+  .org__level--nested::before {
+    left: 50%;
+    top: 0;
+    height: 24px;
   }
 
-  /* The root role is already on its card. */
-  .topology__tier--root .topology__label {
+  /* One row of groups so the bus above them stays correct; frames narrow and wrap their people before the row wraps. */
+  .org__groups {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .org__people {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  /* Stacked variant: deputies sit under the primary position, joined by a short vertical line. */
+  .org__level--stacked .org__people {
+    flex-direction: column;
+    align-items: center;
+  }
+  .org__level--stacked .org__person + .org__person::before {
+    left: 50%;
+    top: -16px;
+    width: 0;
+    height: 16px;
+    border-top: 0;
+    border-left: 1px solid var(--org-line);
+  }
+
+  .org__level--nested > .org__groups > .org__group {
+    padding: 24px 12px 0;
+  }
+
+  .org__level--root > .org__groups > .org__group {
+    padding: 0 12px;
+  }
+
+  /* Groups on one row share a height so the frames line up. */
+  .org__groups {
+    align-items: stretch;
+  }
+  .org__group {
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    min-width: auto;
+  }
+  .org__frame {
+    flex: 1;
+  }
+
+  /* Bus across the groups of a level, and a stem into each group. */
+  .org__level--nested > .org__groups > .org__group::before {
+    left: 0;
+    right: 0;
+    top: 0;
+    width: auto;
+    height: 0;
+    border-left: 0;
+    border-bottom: 0;
+    border-top: 1px solid var(--org-line);
+    border-radius: 0;
+  }
+  .org__level--nested > .org__groups > .org__group:first-child::before {
+    left: 50%;
+  }
+  .org__level--nested > .org__groups > .org__group:last-child::before {
+    right: 50%;
+  }
+  .org__level--nested > .org__groups > .org__group:only-child::before {
     display: none;
   }
-
-  .topology__nodes {
-    --node-w: 220px;
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--tick) var(--space-5);
-    width: fit-content;
-    max-width: 100%;
-    margin-inline: auto;
-    padding-top: var(--tick);
-  }
-
-  .topology__tier--root .topology__nodes {
-    padding-top: 0;
-  }
-
-  /* Bus line from the first node's centre to the last node's centre. */
-  .topology__nodes::before {
+  .org__level--nested > .org__groups > .org__group::after,
+  .org__level--nested > .org__groups > .org__group:not(:last-child)::after {
     content: '';
     position: absolute;
-    top: 0;
-    left: calc(var(--node-w) / 2);
-    right: calc(var(--node-w) / 2);
-    height: 1px;
-    background: var(--line);
-  }
-
-  .topology__tier--root .topology__nodes::before {
-    content: none;
-  }
-
-  .topology__tier--core .topology__nodes {
-    --node-w: 240px;
-  }
-
-  .topology__tier--officer .topology__nodes {
-    --node-w: 200px;
-  }
-
-  .topology__node {
-    width: var(--node-w);
-  }
-
-  .topology__node::before {
     left: 50%;
-    top: calc(var(--tick) * -1);
-    width: 1px;
-    height: var(--tick);
+    top: 0;
+    bottom: auto;
+    height: 24px;
+    border-left: 1px solid var(--org-line);
   }
 
-  .topology__tier--root .topology__node {
-    width: 280px;
+  .org__frame {
+    padding: 14px;
   }
 
-  .topology__tier--root .topology__node::before {
-    content: none;
+  .org__frame--plain {
+    padding: 0;
   }
 
-  .profile-card {
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: var(--space-3);
-    padding: var(--space-5) var(--space-4);
+  .org__group-label {
     text-align: center;
   }
 
-  .profile-card__photo {
-    width: 80px;
+  .org__person + .org__person::before {
+    left: -16px;
+    top: calc(var(--node-pad) + var(--photo) / 2);
+    width: 16px;
+    height: 0;
+    border-left: 0;
+    border-top: 1px solid var(--org-line);
   }
 
-  .profile-card--lg .profile-card__photo {
-    width: 112px;
-  }
-
-  .profile-card--sm .profile-card__photo {
-    width: 64px;
-  }
-
-  .profile-card .photo__initials {
-    font-size: 1.375rem;
+  .org-node {
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 12px;
+    width: var(--node-w);
+    height: 100%;
+    padding: var(--node-pad) 12px;
+    text-align: center;
   }
 }
 
-.structure__more {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--space-6);
+@media (min-width: 1024px) {
+  .org {
+    --photo: 96px;
+    --node-w: 176px;
+  }
+}
+
+/* Entrance: people fade up ~10px in sequence, lines draw in just before the level they lead to.
+   Without JS or with reduced motion nothing is hidden. */
+@media (prefers-reduced-motion: no-preference) {
+  .org-node {
+    transition: opacity 0.45s var(--ease-out) var(--d, 0s), transform 0.45s var(--ease-out) var(--d, 0s);
+  }
+  .org__level--nested::before,
+  .org__level--nested > .org__groups > .org__group::before,
+  .org__level--nested > .org__groups > .org__group::after,
+  .org__person + .org__person::before {
+    transition: opacity 0.35s ease var(--line-d, 0s), transform 0.35s var(--ease-out) var(--line-d, 0s);
+  }
+  .org__person + .org__person::before {
+    transition-delay: var(--d, 0s);
+  }
+  .org[data-revealed='false'] .org-node {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .org[data-revealed='false'] .org__level--nested::before,
+  .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::before,
+  .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::after,
+  .org[data-revealed='false'] .org__person + .org__person::before {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) and (min-width: 768px) {
+  .org__level--nested::before,
+  .org__level--nested > .org__groups > .org__group::after {
+    transform-origin: 50% 0;
+  }
+  .org[data-revealed='false'] .org__level--nested::before,
+  .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::after {
+    transform: scaleY(0);
+  }
+  .org[data-revealed='false'] .org__level--nested > .org__groups > .org__group::before {
+    transform: scaleX(0);
+  }
+}
+
+/* Loading placeholder shaped like the chart. */
+.org-skeleton {
+  display: grid;
+  gap: 20px;
+}
+
+.org-skeleton__row {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .org-skeleton {
+    justify-items: center;
+  }
+  .org-skeleton__row {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+  }
+  .org-skeleton .skeleton-node {
+    width: 176px;
+  }
 }
 
 .skeleton-node {

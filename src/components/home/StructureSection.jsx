@@ -26,7 +26,7 @@ export default function StructureSection() {
         {status === 'loading' ? (
           <StructureSkeleton />
         ) : content.officers.length ? (
-          <StructureChart officers={content.officers} limit={4} moreHref="/structure" />
+          <StructureChart officers={content.officers} />
         ) : (
           <EmptyState icon="structure" title="The class structure has not been published yet" />
         )}

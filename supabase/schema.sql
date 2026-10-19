@@ -32,7 +32,10 @@ create table if not exists public.officers (
   description text,
   photo_url text,
   photo_path text,
-  sort_order int not null default 0
+  sort_order int not null default 0,
+  -- Chart grouping (see migrations/2026-10-19-officer-groups.sql): framed group name and deputy flag.
+  group_name text check (group_name is null or char_length(group_name) <= 60),
+  is_deputy boolean not null default false
 );
 
 create table if not exists public.members (

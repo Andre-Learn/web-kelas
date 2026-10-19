@@ -51,20 +51,18 @@ export function SkeletonGrid({ count = 8, className = 'member-grid', ratio = '3 
   );
 }
 
-/** Matches the topology layout: one root node, then two rows of round nodes. */
+/** Matches the organisation chart: one root card, then two rows of cards. */
 export function StructureSkeleton() {
   return (
-    <div className="topology topology--skeleton" aria-hidden="true">
+    <div className="org-skeleton" aria-hidden="true">
       {[1, 2, 3].map((n, row) => (
-        <div key={row} className="topology__tier">
-          <div className="topology__nodes">
-            {Array.from({ length: n }, (_, i) => (
-              <div key={i} className="topology__node skeleton-node">
-                <span className="skeleton skeleton-node__photo" />
-                <span className="skeleton skeleton-node__line" />
-              </div>
-            ))}
-          </div>
+        <div key={row} className="org-skeleton__row">
+          {Array.from({ length: n }, (_, i) => (
+            <div key={i} className="skeleton-node">
+              <span className="skeleton skeleton-node__photo" />
+              <span className="skeleton skeleton-node__line" />
+            </div>
+          ))}
         </div>
       ))}
     </div>
