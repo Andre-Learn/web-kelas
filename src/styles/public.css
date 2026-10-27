@@ -121,11 +121,11 @@
   align-items: center;
   min-height: 44px;
   padding: 0 16px;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   font-size: var(--text-sm);
   font-weight: 500;
   opacity: 0.78;
-  transition: opacity var(--dur-fast) ease, background-color var(--dur-fast) ease;
+  transition: opacity var(--dur-fast) ease, background-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
 }
 
 .navbar__link:hover {
@@ -152,6 +152,12 @@
   background: var(--accent);
 }
 
+/* On the page surface the active link sits in a shallow recess, with the teal underline as a second cue. */
+.navbar--glass .navbar__link.active {
+  background: var(--surface-2);
+  box-shadow: var(--shadow-inset);
+}
+
 .navbar__actions {
   display: flex;
   align-items: center;
@@ -166,10 +172,15 @@
   width: 44px;
   height: 44px;
   border: 1px solid transparent;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   background: transparent;
   color: inherit;
-  transition: background-color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  transition: background-color var(--dur-fast) ease, border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+}
+
+.theme-toggle:active,
+.navbar__menu-btn:active {
+  box-shadow: var(--shadow-pressed);
 }
 
 .theme-toggle:hover,
@@ -193,7 +204,7 @@
 .mobile-nav__scrim {
   position: fixed;
   inset: var(--nav-h) 0 0 0;
-  background: rgba(5, 7, 12, 0.4);
+  background: rgba(15, 20, 22, 0.4);
 }
 
 .mobile-nav {
@@ -228,18 +239,17 @@
   align-items: center;
   justify-content: space-between;
   min-height: 52px;
-  padding: 0 var(--space-1);
-  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-1);
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-md);
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text-muted);
 }
 
-.mobile-nav__list li:last-child .mobile-nav__link {
-  border-bottom: 0;
-}
-
 .mobile-nav__link.active {
+  background: var(--surface-2);
+  box-shadow: var(--shadow-inset);
   color: var(--text);
 }
 
@@ -555,8 +565,10 @@ main:focus {
 }
 
 .about__fact {
-  padding-top: var(--space-3);
-  border-top: 1px solid var(--text);
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-inset);
 }
 
 .about__fact dt {
@@ -570,6 +582,7 @@ main:focus {
   margin-top: var(--space-1);
   font-size: clamp(2rem, 1.5rem + 1.8vw, 3rem);
   line-height: 1.1;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Mobile only (below 640px): the grid follows how many figures are published, so the row never ends
@@ -846,6 +859,7 @@ main:focus {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
+  box-shadow: var(--shadow-raised);
 }
 
 .org-node__photo {
@@ -1106,15 +1120,17 @@ main:focus {
   flex-direction: column;
   width: 100%;
   height: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
   text-align: left;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-lg);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease, border-color var(--dur-fast) ease;
 }
 
 .member-card__photo {
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
 }
 
 .member-card__photo img {
@@ -1124,7 +1140,7 @@ main:focus {
 .member-card__body {
   display: grid;
   gap: 2px;
-  padding: var(--space-3) var(--space-1) 0;
+  padding: var(--space-3) var(--space-2) var(--space-1);
 }
 
 .member-card__number {
@@ -1146,13 +1162,16 @@ main:focus {
   transition: transform var(--dur-base) var(--ease-out), outline-color var(--dur-fast) ease;
 }
 
-.member-card:active .member-card__photo {
-  transform: scale(0.98);
+.member-card:active {
+  box-shadow: var(--shadow-pressed);
+  transform: translateY(0);
 }
 
 @media (hover: hover) {
-  .member-card:hover .member-card__photo {
-    outline-color: var(--accent);
+  .member-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-raised-hover);
+    transform: translateY(-2px);
   }
   .member-card:hover .member-card__photo img {
     transform: scale(1.04);
@@ -1191,9 +1210,10 @@ main:focus {
   justify-content: space-between;
   aspect-ratio: 3 / 4;
   padding: var(--space-4);
-  border: 1px solid var(--border-strong);
-  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   background: var(--surface);
+  box-shadow: var(--shadow-raised);
   transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease;
 }
 
@@ -1262,10 +1282,19 @@ main:focus {
   width: 100%;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: none;
+  box-shadow: var(--shadow-raised);
   overflow: hidden;
   text-align: left;
+  transition: box-shadow var(--dur-base) ease, transform var(--dur-base) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .gallery-tile:hover {
+    box-shadow: var(--shadow-raised-hover);
+    transform: translateY(-2px);
+  }
 }
 
 .gallery-tile__photo {
@@ -1402,13 +1431,15 @@ main:focus {
   min-height: 44px;
   padding: 8px 16px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-md);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   color: var(--text-muted);
   font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
-  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease;
+  transition: background-color var(--dur-fast) ease, color var(--dur-fast) ease, border-color var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease;
 }
 
 .chip:hover {
@@ -1417,9 +1448,10 @@ main:focus {
 }
 
 .chip[aria-pressed='true'] {
-  background: var(--text);
-  border-color: var(--text);
-  color: var(--bg);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-inset);
+  color: var(--accent-strong);
 }
 
 /* ---------- dialog & lightbox ---------- */
@@ -1775,11 +1807,13 @@ main:focus {
   width: 100%;
   min-height: 48px;
   padding: 0 48px 0 44px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-full);
-  background: var(--surface);
+  border: 1px solid var(--control-border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  box-shadow: var(--shadow-inset);
+  color: var(--text);
   font-size: var(--text-base);
-  transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease;
+  transition: border-color var(--dur-fast) ease, box-shadow var(--dur-fast) ease, background-color var(--dur-fast) ease;
 }
 
 .search__input::-webkit-search-cancel-button {
@@ -1793,6 +1827,7 @@ main:focus {
 .search__input:focus {
   outline: none;
   border-color: var(--accent-strong);
+  background: var(--surface);
 }
 
 /* Keyboard focus gets the same solid ring as every other control. */
@@ -1907,12 +1942,23 @@ main:focus {
   padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-raised);
   transition: border-color var(--dur-fast) ease, background-color var(--dur-fast) ease, transform var(--dur-base) var(--ease-out),
     box-shadow var(--dur-base) ease;
 }
 
+@media (hover: hover) {
+  .about-next__link:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-raised-hover);
+    transform: translateY(-2px);
+  }
+}
+
 .about-next__link:active {
-  transform: translateY(1px);
+  box-shadow: var(--shadow-pressed);
+  transform: translateY(0);
 }
 
 .about-next__link .eyebrow {
@@ -1947,7 +1993,8 @@ main:focus {
 .footer {
   background: var(--bg-alt);
   color: var(--text);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--border-strong);
+  box-shadow: inset 0 8px 16px -14px rgba(32, 40, 43, 0.2);
   padding-top: var(--space-16);
   padding-bottom: max(var(--space-8), env(safe-area-inset-bottom));
 }
@@ -2029,9 +2076,11 @@ main:focus {
   align-items: center;
   gap: var(--space-2);
   min-height: 44px;
-  padding: 0;
-  border: 0;
-  background: none;
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
   font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text);
